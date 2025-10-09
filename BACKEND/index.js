@@ -21,17 +21,74 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Servir archivos estáticos del frontend (detecta estructura del proyecto)
-const frontendPath = path.join(__dirname, '../FRONTEND');
-const rootPath = path.join(__dirname, '..');
+// 🔧 PRODUCCIÓN: Servir archivos estáticos con detección robusta
+const fs = require('fs');
 
-// Detectar si estamos en estructura PROYECTO KIVRA o kivra-nutrir
-if (require('fs').existsSync(frontendPath)) {
+// Posibles ubicaciones del frontend
+const possibleFrontendPaths = [
+    path.join(__dirname, '../FRONTEND'),           // Desarrollo local
+    path.join(__dirname, '../../FRONTEND'),        // Render estructura 1
+    path.join(process.cwd(), 'FRONTEND'),          // Render estructura 2
+    path.join(__dirname, '../'),                   // Fallback 1
+    path.join(process.cwd()),                      // Fallback 2 (root)
+];
+
+let frontendPath = null;
+let indexHtmlFound = false;
+
+// Buscar la ubicación correcta del frontend
+for (const possiblePath of possibleFrontendPaths) {
+    console.log('🔍 Verificando ruta:', possiblePath);
+    
+    if (fs.existsSync(possiblePath)) {
+        const indexPath = path.join(possiblePath, 'index.html');
+        const stockPath = path.join(possiblePath, 'stock.html');
+        
+        if (fs.existsSync(indexPath)) {
+            frontendPath = possiblePath;
+            indexHtmlFound = true;
+            console.log('✅ Frontend encontrado en:', frontendPath);
+            console.log('✅ index.html confirmado');
+            break;
+        }
+    }
+}
+
+// Configurar servidor estático
+if (frontendPath && indexHtmlFound) {
     app.use(express.static(frontendPath));
-    console.log('Sirviendo archivos estáticos desde:', frontendPath);
+    console.log('🌐 Sirviendo archivos estáticos desde:', frontendPath);
+    
+    // Ruta específica para index.html
+    app.get('/', (req, res) => {
+        const indexFile = path.join(frontendPath, 'index.html');
+        console.log('📄 Sirviendo index.html desde:', indexFile);
+        res.sendFile(indexFile);
+    });
+    
+    // Ruta específica para stock.html
+    app.get('/stock.html', (req, res) => {
+        const stockFile = path.join(frontendPath, 'stock.html');
+        console.log('📊 Sirviendo stock.html desde:', stockFile);
+        res.sendFile(stockFile);
+    });
+    
 } else {
-    app.use(express.static(rootPath));
-    console.log('Sirviendo archivos estáticos desde:', rootPath);
+    console.error('❌ FRONTEND NO ENCONTRADO en ninguna ubicación!');
+    console.error('📁 Estructura del proyecto:');
+    console.error('- Directorio actual:', process.cwd());
+    console.error('- __dirname:', __dirname);
+    
+    // Ruta de emergencia
+    app.get('*', (req, res) => {
+        res.status(404).send(`
+            <h1>🚨 Error de configuración</h1>
+            <p>Frontend no encontrado.</p>
+            <p>Directorio actual: ${process.cwd()}</p>
+            <p>__dirname: ${__dirname}</p>
+            <pre>${JSON.stringify(process.env, null, 2)}</pre>
+        `);
+    });
 }
 
 // Configuración de multer para guardar imágenes (detecta estructura)
