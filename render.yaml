@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: kivra-nutrir
+    env: node
+    plan: free
+    buildCommand: cd BACKEND && npm install
+    startCommand: cd BACKEND && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PGHOST
+        fromDatabase:
+          name: kivra-db
+          property: host
+      - key: PGPORT
+        fromDatabase:
+          name: kivra-db
+          property: port
+      - key: PGUSER
+        fromDatabase:
+          name: kivra-db
+          property: user
+      - key: PGPASSWORD
+        fromDatabase:
+          name: kivra-db
+          property: password
+      - key: PGDATABASE
+        fromDatabase:
+          name: kivra-db
+          property: database
+
+databases:
+  - name: kivra-db
+    databaseName: kivra
+    plan: free
