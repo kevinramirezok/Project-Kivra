@@ -21,85 +21,34 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 🔧 PRODUCCIÓN: Servir archivos estáticos con detección robusta
+// 🔧 PRODUCCIÓN: Servir archivos estáticos - versión simplificada
 const fs = require('fs');
 
-// Posibles ubicaciones del frontend
-const possibleFrontendPaths = [
-    path.join(__dirname, '../FRONTEND'),           // Desarrollo local
-    path.join(process.cwd(), 'FRONTEND'),          // Render: /opt/render/project/src/FRONTEND
-    path.join(__dirname, '../../FRONTEND'),        // Render estructura alternativa
-    path.join(__dirname, '../'),                   // Fallback 1
-    path.join(process.cwd()),                      // Fallback 2 (root)
-];
+// Una sola ruta confiable para el frontend
+const frontendPath = path.join(__dirname, '../FRONTEND');
 
-let frontendPath = null;
-let indexHtmlFound = false;
+console.log('📁 Directorio actual (__dirname):', __dirname);
+console.log('📁 Buscando FRONTEND en:', frontendPath);
+console.log('� Verificando si existe:', fs.existsSync(frontendPath));
 
-// Buscar la ubicación correcta del frontend
-for (const possiblePath of possibleFrontendPaths) {
-    console.log('🔍 Verificando ruta:', possiblePath);
-    
-    if (fs.existsSync(possiblePath)) {
-        console.log('📁 Directorio existe, listando contenido...');
-        try {
-            const files = fs.readdirSync(possiblePath);
-            console.log('📂 Archivos encontrados:', files);
-        } catch (e) {
-            console.log('❌ Error leyendo directorio:', e.message);
-        }
-        
-        const indexPath = path.join(possiblePath, 'index.html');
-        const stockPath = path.join(possiblePath, 'stock.html');
-        
-        if (fs.existsSync(indexPath)) {
-            frontendPath = possiblePath;
-            indexHtmlFound = true;
-            console.log('✅ Frontend encontrado en:', frontendPath);
-            console.log('✅ index.html confirmado en:', indexPath);
-            break;
-        } else {
-            console.log('❌ index.html NO encontrado en:', indexPath);
-        }
-    } else {
-        console.log('❌ Directorio no existe');
-    }
-}
-
-// Configurar servidor estático
-if (frontendPath && indexHtmlFound) {
-    app.use(express.static(frontendPath));
-    console.log('🌐 Sirviendo archivos estáticos desde:', frontendPath);
-    
-    // Ruta específica para index.html
-    app.get('/', (req, res) => {
-        const indexFile = path.join(frontendPath, 'index.html');
-        console.log('📄 Sirviendo index.html desde:', indexFile);
-        res.sendFile(indexFile);
-    });
-    
-    // Ruta específica para stock.html
-    app.get('/stock.html', (req, res) => {
-        const stockFile = path.join(frontendPath, 'stock.html');
-        console.log('📊 Sirviendo stock.html desde:', stockFile);
-        res.sendFile(stockFile);
-    });
-
-    // Ruta adicional para /stock (sin .html)
-    app.get('/stock', (req, res) => {
-        const stockFile = path.join(frontendPath, 'stock.html');
-        console.log('📊 Sirviendo stock.html desde /stock:', stockFile);
-        res.sendFile(stockFile);
-    });
-    
+if (!fs.existsSync(frontendPath)) {
+    console.error('❌ FRONTEND NO ENCONTRADO en:', frontendPath);
+    console.error('ℹ️ Estructura esperada: /FRONTEND con index.html y stock.html');
 } else {
-    console.error('❌ FRONTEND NO ENCONTRADO en ninguna ubicación!');
-    console.error('📁 Estructura del proyecto:');
-    console.error('- Directorio actual:', process.cwd());
-    console.error('- __dirname:', __dirname);
+    app.use(express.static(frontendPath));
+    console.log('✅ Sirviendo archivos estáticos desde:', frontendPath);
     
-    // 🔧 SIN RUTA DE EMERGENCIA para evitar PathError
-    console.error('🔧 Servidor iniciará sin archivos estáticos hasta encontrar FRONTEND');
+    app.get('/', (req, res) => {
+        res.sendFile(path.join(frontendPath, 'index.html'));
+    });
+    
+    app.get('/stock.html', (req, res) => {
+        res.sendFile(path.join(frontendPath, 'stock.html'));
+    });
+    
+    app.get('/stock', (req, res) => {
+        res.sendFile(path.join(frontendPath, 'stock.html'));
+    });
 }
 
 // Configuración de multer para guardar imágenes (detecta estructura)
