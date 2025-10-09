@@ -84,6 +84,13 @@ if (frontendPath && indexHtmlFound) {
         console.log('📊 Sirviendo stock.html desde:', stockFile);
         res.sendFile(stockFile);
     });
+
+    // Ruta adicional para /stock (sin .html)
+    app.get('/stock', (req, res) => {
+        const stockFile = path.join(frontendPath, 'stock.html');
+        console.log('📊 Sirviendo stock.html desde /stock:', stockFile);
+        res.sendFile(stockFile);
+    });
     
 } else {
     console.error('❌ FRONTEND NO ENCONTRADO en ninguna ubicación!');
