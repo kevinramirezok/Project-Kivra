@@ -27,8 +27,8 @@ const fs = require('fs');
 // Posibles ubicaciones del frontend
 const possibleFrontendPaths = [
     path.join(__dirname, '../FRONTEND'),           // Desarrollo local
-    path.join(__dirname, '../../FRONTEND'),        // Render estructura 1
-    path.join(process.cwd(), 'FRONTEND'),          // Render estructura 2
+    path.join(process.cwd(), 'FRONTEND'),          // Render: /opt/render/project/src/FRONTEND
+    path.join(__dirname, '../../FRONTEND'),        // Render estructura alternativa
     path.join(__dirname, '../'),                   // Fallback 1
     path.join(process.cwd()),                      // Fallback 2 (root)
 ];
@@ -41,6 +41,14 @@ for (const possiblePath of possibleFrontendPaths) {
     console.log('🔍 Verificando ruta:', possiblePath);
     
     if (fs.existsSync(possiblePath)) {
+        console.log('📁 Directorio existe, listando contenido...');
+        try {
+            const files = fs.readdirSync(possiblePath);
+            console.log('📂 Archivos encontrados:', files);
+        } catch (e) {
+            console.log('❌ Error leyendo directorio:', e.message);
+        }
+        
         const indexPath = path.join(possiblePath, 'index.html');
         const stockPath = path.join(possiblePath, 'stock.html');
         
@@ -48,9 +56,13 @@ for (const possiblePath of possibleFrontendPaths) {
             frontendPath = possiblePath;
             indexHtmlFound = true;
             console.log('✅ Frontend encontrado en:', frontendPath);
-            console.log('✅ index.html confirmado');
+            console.log('✅ index.html confirmado en:', indexPath);
             break;
+        } else {
+            console.log('❌ index.html NO encontrado en:', indexPath);
         }
+    } else {
+        console.log('❌ Directorio no existe');
     }
 }
 
@@ -79,16 +91,8 @@ if (frontendPath && indexHtmlFound) {
     console.error('- Directorio actual:', process.cwd());
     console.error('- __dirname:', __dirname);
     
-    // Ruta de emergencia
-    app.get('*', (req, res) => {
-        res.status(404).send(`
-            <h1>🚨 Error de configuración</h1>
-            <p>Frontend no encontrado.</p>
-            <p>Directorio actual: ${process.cwd()}</p>
-            <p>__dirname: ${__dirname}</p>
-            <pre>${JSON.stringify(process.env, null, 2)}</pre>
-        `);
-    });
+    // 🔧 SIN RUTA DE EMERGENCIA para evitar PathError
+    console.error('🔧 Servidor iniciará sin archivos estáticos hasta encontrar FRONTEND');
 }
 
 // Configuración de multer para guardar imágenes (detecta estructura)
