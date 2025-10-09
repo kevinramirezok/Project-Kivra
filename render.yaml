@@ -3,8 +3,8 @@ services:
     name: kivra-nutrir
     env: node
     plan: free
-    buildCommand: cd BACKEND && npm install
-    startCommand: cd BACKEND && node index.js
+    buildCommand: npm install --prefix BACKEND
+    startCommand: node BACKEND/index.js
     envVars:
       - key: NODE_ENV
         value: production
