@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Kivra Nutrir - Barritas y Granolas Saludables. Productos naturales y energéticos.">
+  <title>Kivra Nutrir - Barritas & Granolas Saludables</title>
+
+  <!-- Fuentes -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="css/Kivra.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="css/celulares.css">
+  <!-- Scripts -->
+  <script src="JavaScript/Kivra.js" defer></script>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-left">
+      <h1>Kivra Nutrir</h1>
+      <div class="slogan">Barritas & Granolas Saludables</div>
+    </div>
+    <div class="header-center">
+      <img src="imagenes/LOGO.jpg" alt="Logo Kivra" class="logo">
+    </div>
+    <div class="header-right">
+      <!-- Mini carrito en header -->
+      <div class="mini-carrito header-cart" role="complementary" aria-label="Carrito de compras">
+        <button id="toggle-header-carrito" class="toggle-carrito" aria-expanded="false"
+          aria-controls="header-mini-carrito-contenido" aria-label="Abrir carrito de compras">
+          <i class="bi bi-cart3" aria-hidden="true"></i>
+          <span id="header-carrito-count" class="carrito-badge" aria-live="polite">0</span>
+          <i id="header-chevron-carrito" class="bi bi-chevron-down" aria-hidden="true"></i>
+        </button>
+        <div id="header-mini-carrito-contenido" class="mini-carrito-contenido oculto">
+          <div id="header-mini-carrito-lista"></div>
+          <div id="header-mini-carrito-total">Total: $<span id="header-mini-total">0</span></div>
+          <button id="finalizar-compra-header" class="btn-finalizar-modal">
+            <i class="bi bi-whatsapp"></i> Finalizar Compra
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- NAV -->
+  <nav>
+    <ul>
+      <li><a href="#productos"><i class="bi bi-basket"></i> Productos</a></li>
+      <li><a href="#beneficios"><i class="bi bi-stars"></i> Beneficios</a></li>
+      <li><a href="#contacto"><i class="bi bi-envelope-heart"></i> Contacto</a></li>
+    </ul>
+  </nav>
+
+  <!-- BUSCADOR -->
+  <div class="buscador-container">
+    <input type="text" id="buscador" placeholder="Buscar producto..." aria-label="Buscar productos" role="searchbox">
+  </div>
+
+  <!-- MODAL SELECCIÓN DE PRODUCTOS -->
+  <div id="modal-seleccion" class="modal">
+    <div class="modal-content seleccion-content">
+      <span class="cerrar-modal" id="cerrar-modal-seleccion">&times;</span>
+      <h3 id="modal-seleccion-titulo"></h3>
+      <p id="modal-seleccion-descripcion" class="seleccion-descripcion"></p>
+      
+      <div class="seleccion-instrucciones">
+        <p>Selecciona los productos que deseas incluir en tu promoción:</p>
+        <p class="seleccion-contador">
+          Productos seleccionados: <span id="contador-seleccion">0</span>/<span id="total-requerido"></span>
+        </p>
+      </div>
+
+      <div id="productos-seleccion" class="productos-seleccion"></div>
+      
+      <div class="seleccion-footer">
+        <button id="confirmar-seleccion" class="btn-confirmar" disabled>
+          Confirmar Selección
+        </button>
+        <button id="cancelar-seleccion" class="btn-cancelar">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL PRODUCTOS -->
+  <div id="modal-productos" class="modal">
+    <!-- CARRITO EN MODAL -->
+    <div id="carrito-modal" class="carrito-modal">
+      <button id="toggle-carrito-modal" class="toggle-carrito-modal">
+        <i class="bi bi-cart3"></i>
+        Ver Carrito <span id="modal-carrito-count" class="carrito-badge">0</span>
+        <i class="bi bi-chevron-compact-right" id="chevron-carrito-modal"></i>
+      </button>
+
+      <div id="carrito-modal-contenido" class="carrito-modal-contenido">
+        <div class="carrito-modal-header">
+          <h4>🛒 Tu Carrito</h4>
+          <button class="cerrar-carrito-modal">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+
+        <div id="carrito-modal-items"></div>
+
+        <div class="carrito-modal-footer">
+          <div class="carrito-modal-total">
+            Total: $<span id="carrito-modal-total">0</span>
+          </div>
+          <button id="finalizar-compra-modal" class="btn-finalizar">
+            <i class="bi bi-whatsapp"></i> Finalizar Compra
+          </button>
+          <button id="seguir-comprando-modal" class="btn-seguir">
+            <i class="bi bi-arrow-left"></i> Seguir Comprando
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-content">
+      <span class="cerrar-modal" id="cerrar-modal">&times;</span>
+      <h3 id="modal-titulo"></h3>
+      <div id="modal-listado" class="grid"></div>
+      <div id="modal-paginacion" style="display: flex; justify-content: center; gap: 16px; margin-top: 18px;">
+        <button id="modal-anterior" style="display:none;">Anterior</button>
+        <span id="modal-pagina"></span>
+        <button id="modal-siguiente" style="display:none;">Siguiente</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECCIÓN PRODUCTOS -->
+  <section class="productos" id="productos">
+    <div class="titulo-container">
+      <h2 class="productos-titulo">Nuestros Productos</h2>
+    </div>
+
+    <!-- PROMOS -->
+    <div class="productos-seccion">
+      <h3 class="productos-subtitulo">Promociones</h3>
+    </div>
+    <div class="grid" id="promosContainer"></div>
+
+    <button id="verMasPromos" aria-label="Ver más promociones"><i class="bi bi-plus-circle"
+        aria-hidden="true"></i> Ver más promociones</button>
+
+    <!-- GRANOLAS SALUDABLES -->
+    <div class="productos-seccion">
+      <h3 class="productos-subtitulo">Granolas y Otros</h3>
+    </div>
+    <div class="grid" id="granolaContainer"></div>
+
+    <button id="verMasGranola" aria-label="Ver más productos de granola"><i class="bi bi-plus-circle"
+        aria-hidden="true"></i> Ver más productos</button>
+
+
+    <!-- BARRITAS -->
+    <div class="productos-seccion">
+      <h3 class="productos-subtitulo">Barritas y Turrones</h3>
+    </div>
+    <div class="grid" id="barritasContainer"></div>
+
+    <button id="verMasBarritas"><i class="bi bi-plus-circle"></i> Ver más productos</button>
+
+  </section>
+
+  <!-- CARRITO -->
+  <aside id="carrito-sidebar" class="carrito-oculto">
+    <span class="cerrar-carrito" id="cerrar-carrito">&times;</span>
+    <h2>🛒 Carrito</h2>
+    <ul id="lista-carrito"></ul>
+    <p>Total: $<span id="total">0</span></p>
+    <button id="finalizar-compra-sidebar" class="btn-finalizar-modal">
+      <i class="bi bi-whatsapp"></i> Finalizar Compra
+    </button>
+  </aside>
+
+  <!-- FOOTER SECTIONS -->
+  <div class="footer-sections">
+    <!-- BENEFICIOS -->
+    <section id="beneficios">
+      <h2>¿Por qué elegirnos?</h2>
+      <ul>
+        <li>⚡ Energía natural para tu día</li>
+        <li>🌱 Ingredientes 100% saludables</li>
+        <li>📦 Ventas por mayor y menor</li>
+      </ul>
+    </section>
+
+    <!-- CONTACTO -->
+    <section id="contacto">
+      <h2>Contacto</h2>
+      <ul>
+        <li>📩 Instagram: <a href="https://www.instagram.com/kivra.nutrir" target="_blank">@kivra.nutrir</a></li>
+        <li><i class="bi bi-whatsapp"></i> WhatsApp: <a href="https://wa.me/+5493482676690" target="_blank">+54 9 3482
+            67-6690</a></li>
+        <li>¡No dudes en escribirnos para hacer tu pedido!</li>
+      </ul>
+    </section>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>&copy; 2025 Kivra Nutrir - Barritas & Granolas Saludables</p>
+  </footer>
+
+  <!-- SCRIPTS -->
+  <script src="JavaScript/Kivra.js"></script>
+
+</body>
+
+</html>

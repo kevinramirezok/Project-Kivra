@@ -1,0 +1,808 @@
+/* ===== RESPONSIVE MEJORADO PARA CELULARES ===== */
+
+/* Tablets grandes y pantallas medianas */
+@media (max-width: 1024px) {
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 20px;
+        padding: 16px;
+        align-items: stretch;
+        justify-items: center;
+    }
+
+    .producto {
+        width: 100%;
+        max-width: 220px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+          /* Modal responsive para móviles */
+    .modal-content {
+        padding: 10px;
+        width: 95%;
+        max-width: 100%;
+    }
+
+    #modal-listado .card {
+        width: 160px;
+    }content: space-between;
+        align-items: center;
+        height: 100%;
+        margin: 0;
+    }
+
+    .producto img {
+        width: 90px;
+        height: 90px;
+        object-fit: cover;
+    }
+
+    header {
+        padding: 20px 30px;
+    }
+
+    header h1 {
+        font-size: 3.5rem;
+    }
+
+    .productos-titulo {
+        font-size: 2.8rem;
+        padding: 16px 24px;
+    }
+}
+
+/* Tablets pequeñas */
+@media (max-width: 768px) {
+    body {
+        padding-bottom: 80px;
+    }
+
+    #modal-listado {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        padding: 15px;
+    }
+
+    #modal-listado .card {
+        min-height: 280px;
+    }
+
+    /* Header responsive */
+    header {
+        padding: 15px 20px;
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+    }
+
+    /* Header pequeño en tablets */
+    header.header-small {
+        padding: 8px 20px;
+        gap: 8px;
+    }
+
+    header.header-small h1 {
+        font-size: 2.4rem;
+    }
+
+    header.header-small .slogan {
+        font-size: 1.3rem;
+    }
+
+    header.header-small .logo {
+        width: 40px;
+    }
+
+    header .header-left,
+    header .header-center,
+    header .header-right {
+        flex: none;
+        width: 100%;
+    }
+
+    header h1 {
+        font-size: 3rem;
+    }
+
+    header .slogan {
+        font-size: 1.6rem;
+    }
+
+    .logo {
+        width: 30px;
+        margin: 8px 0;
+    }
+
+    /* Navegación responsive */
+    nav ul {
+        flex-wrap: wrap;
+        gap: 15px;
+        justify-content: center;
+    }
+
+    nav a {
+        font-size: 1.5rem;
+        padding: 8px 12px;
+    }
+
+    /* Grid responsive */
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        padding: 16px;
+    }
+
+    .producto {
+        max-width: 200px;
+        padding: 16px;
+    }
+
+    .producto img {
+        width: 85px;
+        height: 85px;
+    }
+
+    .producto h3 {
+        font-size: 1.6rem;
+        line-height: 1.4;
+        text-align: center;
+        width: 100%;
+    }
+
+    .producto .descripcion {
+        font-size: 1.3rem;
+        text-align: center;
+        width: 100%;
+    }
+
+    .producto .promo-productos small {
+        font-size: 0.85rem;
+        text-align: center;
+        margin: 6px 0;
+    }
+
+    .producto .precio {
+        font-size: 1.8rem;
+        text-align: center;
+        width: 100%;
+        margin: 10px 0;
+    }
+
+    /* Títulos responsive */
+    .productos-titulo {
+        font-size: 2.4rem;
+        padding: 12px 20px;
+        margin: 24px auto;
+    }
+
+    .productos-subtitulo {
+        font-size: 2rem;
+        margin: 24px 0 16px 0;
+    }
+
+    /* Buscador responsive */
+    #buscador {
+        width: 85%;
+        font-size: 1.8rem;
+        padding: 12px 16px;
+    }
+
+    /* Carrito modal responsive */
+    .carrito-modal {
+        right: 5px;
+        bottom: 90px;
+        transform: none;
+        z-index: 1000;
+    }
+
+    .toggle-carrito-modal {
+        padding: 8px 12px;
+        font-size: 1.3rem;
+        min-width: 100px;
+        border-radius: 6px;
+        opacity: 0.9;
+    }
+
+    .carrito-modal-contenido {
+        width: 300px;
+        max-height: 60vh;
+    }
+
+    /* Footer responsive */
+    .footer-sections {
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px;
+    }
+
+    #beneficios,
+    #contacto {
+        max-width: none;
+        width: 100%;
+    }
+}
+
+/* Móviles grandes */
+@media (max-width: 600px) {
+    body {
+        padding-bottom: 70px;
+    }
+
+    /* Header compacto */
+    header {
+        padding: 12px 16px;
+    }
+
+    /* Header pequeño en móviles grandes */
+    header.header-small {
+        padding: 6px 16px;
+    }
+
+    header.header-small h1 {
+        font-size: 2.2rem;
+    }
+
+    header.header-small .slogan {
+        font-size: 1.1rem;
+    }
+
+    header.header-small .logo {
+        width: 35px;
+    }
+
+    header h1 {
+        font-size: 2.8rem;
+    }
+
+    header .slogan {
+        font-size: 1.4rem;
+    }
+
+    .logo {
+        width: 30px;
+    }
+
+    /* Grid más compacto */
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        padding: 12px;
+    }
+
+    .producto {
+        max-width: 170px;
+        padding: 14px;
+        min-height: 280px; /* Más altura para acomodar descripciones */
+    }
+
+    .producto img {
+        width: 80px;
+        height: 80px;
+    }
+
+    .producto h3 {
+        font-size: 1.5rem;
+        margin: 8px 0;
+        line-height: 1.3;
+        /* Limitar a 2 líneas */
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .producto .descripcion {
+        font-size: 1.1rem;
+        margin: 6px 0;
+        line-height: 1.3;
+        /* Permitir más líneas para ver ingredientes */
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-align: center;
+    }
+
+    .producto .precio {
+        font-size: 1.6rem;
+        margin: 8px 0;
+    }
+
+    .producto .btnagregar {
+        padding: 8px 12px;
+        font-size: 1.2rem;
+        width: 100%;
+        margin-top: auto;
+        border-radius: 5px;
+    }
+    
+    .producto .btnagregar:active,
+    .producto .btnagregar:focus {
+        outline: none;
+        transform: scale(0.98);
+        transition: transform 0.1s;
+    }
+    
+    .producto .btnagregar:not(:active) {
+        transform: scale(1);
+        transition: transform 0.2s;
+    }
+
+    /* Títulos más pequeños */
+    .productos-titulo {
+        font-size: 2rem;
+        padding: 10px 16px;
+        margin: 20px auto;
+    }
+
+    .productos-subtitulo {
+        font-size: 1.8rem;
+        margin: 20px 0 12px 0;
+    }
+
+    /* Botones ver más */
+    #verMasBarritas,
+    #verMasGranola {
+        padding: 10px 20px;
+        font-size: 1.4rem;
+        margin: 16px auto;
+    }
+
+    /* Buscador */
+    #buscador {
+        width: 90%;
+        font-size: 1.6rem;
+        padding: 10px 14px;
+    }
+
+    /* Carrito modal pequeño */
+    .carrito-modal {
+        right: 8px;
+        bottom: 60px;
+    }
+
+    .toggle-carrito-modal {
+        padding: 6px;
+        font-size: 1.2rem;
+        min-width: auto;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        position: relative;
+    }
+
+    .toggle-carrito-modal span,
+    .toggle-carrito-modal i.bi-chevron-compact-right {
+        display: none;
+    }
+
+    .carrito-badge {
+        position: absolute;
+        top: -5px;
+        right: 5px;
+        font-size: 0.9rem;
+        min-width: 16px;
+        height: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        padding: 2px;
+    }
+
+    .carrito-modal-contenido {
+        width: 260px;
+        max-height: 55vh;
+        padding: 6px;
+    }
+
+    .carrito-modal-header {
+        padding: 10px;
+        font-size: 1.6rem;
+    }
+
+    .carrito-modal-item {
+        padding: 6px;
+        font-size: 1.2rem;
+    }
+
+    .carrito-modal-footer {
+        padding: 12px;
+    }
+}
+
+/* Móviles pequeños */
+@media (max-width: 480px) {
+    /* Header muy compacto */
+    header {
+        padding: 10px 12px;
+    }
+
+    /* Header pequeño en móviles pequeños */
+    header.header-small {
+        padding: 4px 12px;
+    }
+
+    header.header-small h1 {
+        font-size: 1.8rem;
+    }
+
+    header.header-small .slogan {
+        font-size: 1rem;
+    }
+
+    header.header-small .logo {
+        width: 35px;
+    }
+
+    #modal-listado {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        padding: 10px;
+    }
+
+    #modal-listado .card {
+        min-height: 260px;
+    }
+
+    .modal-content {
+        padding: 10px;
+        width: 95%;
+        margin: 10px auto;
+    }
+    
+    /* Ajuste específico para el modal en móviles */
+    #modal-listado {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        padding: 8px;
+    }
+
+    #modal-listado .card {
+        min-height: 260px;
+        padding: 8px;
+        font-size: 1rem;
+    }
+
+    #modal-listado .card img {
+        width: 70px;
+        height: 70px;
+        margin-bottom: 8px;
+    }
+
+    .modal-content {
+        padding: 12px;
+        margin: 8px;
+    }
+
+    header h1 {
+        font-size: 2.4rem;
+    }
+
+    header .slogan {
+        font-size: 1.3rem;
+    }
+
+    .logo {
+        width: 30px;
+    }
+
+    /* Navegación stack */
+    nav {
+        padding: 8px;
+    }
+
+    nav ul {
+        gap: 8px;
+    }
+
+    nav a {
+        font-size: 1.3rem;
+        padding: 6px 10px;
+    }
+
+    /* Grid móvil pequeño */
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        padding: 10px;
+    }
+
+    .producto {
+        max-width: 150px;
+        padding: 12px;
+        min-height: 260px; /* Altura adecuada para descripciones */
+    }
+
+    .producto img {
+        width: 70px;
+        height: 70px;
+    }
+
+    .producto h3 {
+        font-size: 1.4rem;
+        margin: 6px 0;
+    }
+
+    .producto .descripcion {
+        font-size: 1rem;
+        margin: 4px 0;
+        line-height: 1.2;
+        /* Mostrar más información en móviles pequeños */
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-align: center;
+    }
+
+    .producto .precio {
+        font-size: 1.5rem;
+        margin: 6px 0;
+    }
+
+    .producto .btnagregar {
+        padding: 6px 10px;
+        font-size: 1.1rem;
+    }
+
+    /* Títulos pequeños */
+    .productos-titulo {
+        font-size: 1.8rem;
+        padding: 8px 12px;
+        margin: 16px auto;
+    }
+
+    .productos-subtitulo {
+        font-size: 1.6rem;
+        margin: 16px 0 10px 0;
+    }
+
+    /* Buscador pequeño */
+    #buscador {
+        width: 95%;
+        font-size: 1.5rem;
+        padding: 8px 12px;
+    }
+
+    /* Modal responsive pequeño */
+    .modal-content {
+        padding: 16px;
+        width: 98vw;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    #modal-listado {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 10px;
+        padding: 10px;
+    }
+
+    #modal-listado .card {
+        min-height: 280px;
+    }
+
+    .cerrar-modal {
+        top: 8px;
+        right: 8px;
+        font-size: 2rem;
+    }
+
+    /* Carrito sidebar pequeño */
+    #carrito-sidebar {
+        width: 100vw;
+        padding: 20px 16px;
+    }
+
+    /* Carrito modal muy pequeño */
+    .carrito-modal {
+        right: 4px;
+        bottom: 50px;
+    }
+
+    .toggle-carrito-modal {
+        padding: 8px 12px;
+        font-size: 1.2rem;
+        min-width: 80px;
+        transform: scale(0.8);
+    }
+
+    .carrito-modal-contenido {
+        width: 240px;
+        max-height: 50vh;
+    }
+
+    /* Footer stack */
+    .footer-sections {
+        padding: 16px;
+        gap: 16px;
+    }
+
+    #beneficios h2,
+    #contacto h2 {
+        font-size: 2rem;
+    }
+
+    #beneficios li,
+    #contacto li {
+        font-size: 1.4rem;
+    }
+}
+
+/* Breakpoint específico para 425px */
+@media (max-width: 425px) {
+    #modal-listado {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        padding: 8px;
+    }
+
+    #modal-listado .card {
+        min-height: 240px;
+        padding: 8px;
+    }
+
+    #modal-listado .card img {
+        width: 65px;
+        height: 65px;
+    }
+
+    .modal-content {
+        padding: 8px;
+        width: 98%;
+        margin: 8px auto;
+    }
+}
+
+/* Breakpoint específico para 425px */
+@media (max-width: 425px) {
+    #modal-listado {
+        gap: 8px;
+        padding: 8px;
+    }
+
+    #modal-listado .card {
+        width: 150px;
+        min-height: 260px;
+        padding: 8px;
+    }
+}
+
+/* Móviles muy pequeños (iPhone SE, etc.) */
+@media (max-width: 375px) {
+    #modal-listado {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    #modal-listado .card {
+        max-width: 200px;
+        margin: 0 auto;
+    }
+    .grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        padding: 8px;
+    }
+
+    .producto {
+        max-width: 140px;
+        padding: 10px;
+        min-height: 250px; /* Mantener espacio para ingredientes */
+    }
+
+    .producto img {
+        width: 65px;
+        height: 65px;
+    }
+
+    .producto h3 {
+        font-size: 1.3rem;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+    }
+
+    .producto .descripcion {
+        font-size: 0.95rem;
+        line-height: 1.2;
+        /* Permitir ver ingredientes incluso en pantallas muy pequeñas */
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin: 4px 0;
+        text-align: center;
+    }
+
+    .producto .precio {
+        font-size: 1.4rem;
+    }
+
+    .productos-titulo {
+        font-size: 1.6rem;
+        padding: 6px 10px;
+    }
+
+    .productos-subtitulo {
+        font-size: 1.4rem;
+    }
+
+    .carrito-modal-contenido {
+        width: 220px;
+    }
+
+    .toggle-carrito-modal {
+        transform: scale(0.7);
+       max-width: 20px;
+    }
+}
+
+/* Optimizaciones adicionales para touch */
+@media (pointer: coarse) {
+    /* Hacer botones más grandes para dedos */
+    .producto .btnagregar {
+        min-height: 44px;
+        padding: 12px;
+    }
+
+    .toggle-carrito-modal,
+    .toggle-carrito {
+        min-height: 44px;
+        touch-action: manipulation;
+    }
+
+    nav a {
+        min-height: 44px;
+        touch-action: manipulation;
+    }
+
+    /* Evitar zoom en inputs en iOS */
+    #buscador {
+        font-size: max(16px, 1.6rem);
+    }
+}
+
+/* Landscape en móviles */
+@media (max-height: 500px) and (orientation: landscape) {
+    header {
+        padding: 8px 16px;
+    }
+
+    header h1 {
+        font-size: 2.2rem;
+    }
+
+    .carrito-modal {
+        right: 10px;
+        top: 10px;
+        transform: none;
+    }
+
+    .carrito-modal-contenido {
+        max-height: 40vh;
+    }
+}
+
+/* Print styles (bonus) */
+@media print {
+    .carrito-modal,
+    #carrito-sidebar,
+    .toggle-carrito-modal,
+    .toggle-carrito,
+    nav {
+        display: none !important;
+    }
+
+    .producto {
+        break-inside: avoid;
+    }
+}
