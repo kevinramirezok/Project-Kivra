@@ -1,9 +1,9 @@
+﻿// =============================
+// PROTECCIÓN SIMPLE POR CONTRASEÑA
 // =============================
-// PROTECCIÃ“N SIMPLE POR CONTRASEÃ‘A
-// =============================
-const PASSWORD = "kivra25"; // Cambia esta contraseÃ±a por la que quieras
+const PASSWORD = "kivra25"; // Cambia esta contraseña por la que quieras
 if (sessionStorage.getItem('kivra_auth') !== PASSWORD) {
-    const ingreso = prompt("Ingrese la contraseÃ±a para acceder al panel de stock:");
+    const ingreso = prompt("Ingrese la contraseña para acceder al panel de stock:");
     if (ingreso !== PASSWORD) {
         document.body.innerHTML = '<h2 style="color: var(--rojo); text-align:center; margin-top:100px;">Acceso denegado</h2>';
         throw new Error("Acceso denegado");
@@ -62,12 +62,12 @@ function actualizarStock(id) {
     
     // ðŸš¨ VALIDACIÃ“N CRÃTICA: Stock no puede ser negativo
     if (isNaN(nuevoStock) || nuevoStock < 0) {
-        mostrarAlerta('El stock no puede ser negativo ni invÃ¡lido', 'danger');
+        mostrarAlerta('El stock no puede ser negativo ni inválido', 'danger');
         input.focus();
         return;
     }
     
-    // ðŸ”’ VALIDACIÃ“N: Stock mÃ¡ximo razonable
+    // ðŸ”’ VALIDACIÃ“N: Stock máximo razonable
     if (nuevoStock > 9999) {
         mostrarAlerta('El stock no puede ser mayor a 9999', 'danger');
         input.focus();
@@ -82,7 +82,7 @@ function actualizarStock(id) {
         .then(res => {
             console.log('ðŸ” Status respuesta:', res.status);
             if (res.ok) {
-                // Si el status es 200-299, consideramos Ã©xito
+                // Si el status es 200-299, consideramos éxito
                 mostrarAlerta('Stock actualizado correctamente', 'success');
                 cargarProductos();
                 return res.json().catch(() => ({ success: true }));
@@ -94,11 +94,11 @@ function actualizarStock(id) {
         })
         .then(data => {
             console.log('ðŸ” Datos recibidos:', data);
-            // Ya manejamos el Ã©xito arriba, aquÃ­ solo logueamos
+            // Ya manejamos el éxito arriba, aquí solo logueamos
         })
         .catch(error => {
             console.error('âŒ Error completo:', error);
-            mostrarAlerta('Error de conexiÃ³n con el backend', 'danger');
+            mostrarAlerta('Error de conexión con el backend', 'danger');
         });
 }
 
@@ -123,7 +123,7 @@ function filterProducts() {
     const stockFiltro = document.getElementById('stock-filter').value;
     let filtrados = productos.slice();
 
-    // Filtrar por categorÃ­a
+    // Filtrar por categoría
     if (categoria !== 'all') {
         filtrados = filtrados.filter(p => (p.categoria || '').toLowerCase() === categoria.toLowerCase());
     }
@@ -175,7 +175,7 @@ function renderizarProductosFiltrados(lista) {
 // ELIMINAR PRODUCTO
 // =============================
 function eliminarProducto(id) {
-    if (!confirm('Â¿Seguro que quieres eliminar este producto?')) return;
+    if (!confirm('¿Seguro que quieres eliminar este producto?')) return;
     fetch(`${API_BASE_URL}/api/productos/${id}`, {
         method: 'DELETE'
     })
@@ -195,8 +195,8 @@ function eliminarProducto(id) {
             console.log('ðŸ” [ELIMINAR] Respuesta:', data);
         })
         .catch(error => {
-            console.error('âŒ [ELIMINAR] Error de conexiÃ³n:', error);
-            mostrarAlerta('Error de conexiÃ³n con el backend', 'danger');
+            console.error('âŒ [ELIMINAR] Error de conexión:', error);
+            mostrarAlerta('Error de conexión con el backend', 'danger');
         });
 }
 
@@ -204,9 +204,9 @@ function eliminarProducto(id) {
 // DESCONTAR STOCK MANUALMENTE (VENTA)
 // =============================
 function confirmarVenta(id, stockActual) {
-    const cantidad = parseInt(prompt('Â¿CuÃ¡ntas unidades deseas descontar del stock?'));
+    const cantidad = parseInt(prompt('¿Cuántas unidades deseas descontar del stock?'));
     if (isNaN(cantidad) || cantidad <= 0) {
-        alert('Cantidad invÃ¡lida');
+        alert('Cantidad inválida');
         return;
     }
     if (cantidad > stockActual) {
@@ -215,7 +215,7 @@ function confirmarVenta(id, stockActual) {
     }
     
     // ðŸš¨ RACE CONDITION PREVENTION: Enviar cantidad a descontar, no stock final
-    // El backend calcularÃ¡ el stock final atÃ³micamente
+    // El backend calculará el stock final atómicamente
     fetch(`${API_BASE_URL}/api/productos/${id}/venta`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -233,7 +233,7 @@ function confirmarVenta(id, stockActual) {
                 mostrarAlerta(data.error || 'Error al descontar stock', 'danger');
             }
         })
-        .catch(() => mostrarAlerta('Error de conexiÃ³n con el backend', 'danger'));
+        .catch(() => mostrarAlerta('Error de conexión con el backend', 'danger'));
 }
 
 // =============================
@@ -308,7 +308,7 @@ function saveProduct(e) {
         .then(res => {
             console.log('ðŸ” [GUARDAR/EDITAR] Status:', res.status);
             if (res.ok) {
-                // Status 200-299 = Ã©xito
+                // Status 200-299 = éxito
                 mostrarAlerta(productoEditando ? 'Producto actualizado correctamente' : 'Producto agregado correctamente', 'success');
                 closeModal();
                 cargarProductos();
@@ -323,8 +323,8 @@ function saveProduct(e) {
             console.log('ðŸ” [GUARDAR/EDITAR] Respuesta:', data);
         })
         .catch(error => {
-            console.error('âŒ [GUARDAR/EDITAR] Error de conexiÃ³n:', error);
-            mostrarAlerta('Error de conexiÃ³n con el backend', 'danger');
+            console.error('âŒ [GUARDAR/EDITAR] Error de conexión:', error);
+            mostrarAlerta('Error de conexión con el backend', 'danger');
         });
 }
 
@@ -338,13 +338,13 @@ cargarProductos();
 // REPORTE DE STOCK BAJO/SIN STOCK
 // =============================
 function mostrarReporteStockBajo() {
-    // Considera stock mÃ­nimo 5 si no estÃ¡ definido
+    // Considera stock mínimo 5 si no está definido
     const criticos = productos.filter(p => p.stock === 0 || p.stock <= (p.min_stock || 5));
     if (criticos.length === 0) {
-        mostrarAlerta('Â¡No hay productos con stock bajo o sin stock!', 'success');
+        mostrarAlerta('¡No hay productos con stock bajo o sin stock!', 'success');
         return;
     }
-    let html = '<b>Productos con stock crÃ­tico:</b><ul style="margin:10px 0 0 20px;">';
+    let html = '<b>Productos con stock crítico:</b><ul style="margin:10px 0 0 20px;">';
     criticos.forEach(p => {
         html += `<li><b>${p.nombre}</b> - Stock: <span style="color:${p.stock === 0 ? 'var(--rojo)' : 'var(--amarillo)'};font-weight:bold;">${p.stock}</span></li>`;
     });
@@ -361,7 +361,7 @@ function exportarInventarioCSV() {
         return;
     }
     // Encabezados
-    const headers = ['ID', 'Nombre', 'DescripciÃ³n', 'CategorÃ­a', 'Precio', 'Stock', 'Imagen'];
+    const headers = ['ID', 'Nombre', 'Descripción', 'Categoría', 'Precio', 'Stock', 'Imagen'];
     let csv = headers.join(',') + '\n';
     productos.forEach(p => {
         csv += [p.id, p.nombre, p.descripcion, p.categoria, p.precio, p.stock, p.imagen]
@@ -395,7 +395,7 @@ function mostrarAlerta(mensaje, tipo = 'info', esPrompt = false, callback = null
     if (tipo === 'info') icon = '<i class="bi bi-info-circle-fill" style="color:var(--marron-claro);"></i>';
     
     if (esPrompt) {
-        // Mostrar input para confirmaciÃ³n o cantidad
+        // Mostrar input para confirmación o cantidad
         const inputType = esCantidad ? 'number' : 'text';
         container.innerHTML = `<div class="alert alert-${tipo}" style="display:flex;align-items:center;gap:10px;">
             ${icon}
@@ -458,7 +458,7 @@ function exportarHistorialCSV() {
         mostrarAlerta('No hay movimientos para exportar.', 'warning');
         return;
     }
-    const headers = ['Fecha', 'Producto', 'AcciÃ³n', 'Cantidad', 'Stock Antes', 'Stock DespuÃ©s', 'Usuario'];
+    const headers = ['Fecha', 'Producto', 'Acción', 'Cantidad', 'Stock Antes', 'Stock Después', 'Usuario'];
     let csv = headers.join(',') + '\n';
     movimientosGlobal.forEach(mov => {
         csv += [
@@ -488,7 +488,7 @@ function exportarHistorialCSV() {
 function renderizarTablaHistorial(data) {
     const tableContainer = document.getElementById('historial-table-container');
     if (!data.length) {
-        tableContainer.innerHTML = '<div style="color:var(--rojo);text-align:center;font-weight:bold;">No hay movimientos registrados.<br><span style="color:var(--marron-claro);font-size:1rem;">Â¿Agregaste, editaste o vendiste productos?<br>Si el historial sigue vacÃ­o, revisa la base de datos o la conexiÃ³n del backend.</span></div>';
+        tableContainer.innerHTML = '<div style="color:var(--rojo);text-align:center;font-weight:bold;">No hay movimientos registrados.<br><span style="color:var(--marron-claro);font-size:1rem;">¿Agregaste, editaste o vendiste productos?<br>Si el historial sigue vacío, revisa la base de datos o la conexión del backend.</span></div>';
         return;
     }
     
@@ -497,10 +497,10 @@ function renderizarTablaHistorial(data) {
             <tr style="background:var(--crema);">
                 <th style="border-bottom:2px solid var(--marron-claro);padding:8px;">Fecha</th>
                 <th style="border-bottom:2px solid var(--marron-claro);padding:8px;">Producto</th>
-                <th style="border-bottom:2px solid var(--marron-claro);padding:8px;">AcciÃ³n</th>
+                <th style="border-bottom:2px solid var(--marron-claro);padding:8px;">Acción</th>
                 <th style="border-bottom:2px solid var(--marron-claro);padding:8px;">Cantidad</th>
                 <th style="border-bottom:2px solid var(--marron-claro);padding:8px;">Stock Antes</th>
-                <th style="border-bottom:2px solid var(--marron-claro);padding:8px;">Stock DespuÃ©s</th>
+                <th style="border-bottom:2px solid var(--marron-claro);padding:8px;">Stock Después</th>
                 <th style="border-bottom:2px solid var(--marron-claro);padding:8px;">Usuario</th>
             </tr>
         </thead>
@@ -508,7 +508,7 @@ function renderizarTablaHistorial(data) {
         
     data.forEach(mov => {
         let rowStyle = '';
-        if (mov.accion === 'Venta' || mov.accion === 'EliminaciÃ³n') rowStyle = 'background:#fff3cd;';
+        if (mov.accion === 'Venta' || mov.accion === 'Eliminación') rowStyle = 'background:#fff3cd;';
         html += `<tr style="${rowStyle}">
             <td style="padding:6px;border-bottom:1px solid #eee;">${new Date(mov.fecha).toLocaleString()}</td>
             <td style="padding:6px;border-bottom:1px solid #eee;">${mov.producto_nombre || mov.producto_id}</td>
