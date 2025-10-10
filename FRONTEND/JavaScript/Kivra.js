@@ -248,7 +248,7 @@ const carritoModule = {
         if (!lista || !badge || !totalElement) return;
 
         lista.innerHTML = carrito.length === 0
-            ? "<li>El carrito estÃ¡ vacÃ­o.</li>"
+            ? "<li>El carrito está vacío.</li>"
             : this.renderizarItemsCarrito();
 
         badge.textContent = carrito.length;
@@ -276,7 +276,7 @@ const carritoModule = {
 
         const productosAgrupados = this.contarProductosAgrupados();
         const contenidoHTML = Object.keys(productosAgrupados).length === 0
-            ? "<div class='mini-vacio'>VacÃ­o</div>"
+            ? "<div class='mini-vacio'>Vacío</div>"
             : this.renderizarMiniCarrito(productosAgrupados);
 
         carritos.forEach(cart => {
@@ -368,7 +368,7 @@ const carritoModule = {
 
     async finalizarCompra() {
         if (carrito.length === 0) {
-            alert("El carrito estÃ¡ vacÃ­o.");
+            alert("El carrito está vacío.");
             return;
         }
 
@@ -495,7 +495,7 @@ const productosModule = {
     },
 
     actualizarControlesPaginacion(pagina, anterior, siguiente, total, tipo) {
-        pagina.textContent = `PÃ¡gina ${modalPaginaActual} de ${total}`;
+        pagina.textContent = `Página ${modalPaginaActual} de ${total}`;
         anterior.style.display = modalPaginaActual > 1 ? "inline-block" : "none";
         siguiente.style.display = modalPaginaActual < total ? "inline-block" : "none";
 
@@ -1089,7 +1089,7 @@ function actualizarStockProducto(id, nuevoStock) {
             mostrarMensaje('Error al actualizar stock', 'error');
         }
     })
-    .catch(() => mostrarMensaje('Error de conexiÃ³n con el backend', 'error'));
+    .catch(() => mostrarMensaje('Error de conexión con el backend', 'error'));
 }
 
 
