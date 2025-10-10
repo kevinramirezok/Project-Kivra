@@ -862,8 +862,14 @@ function handleHeaderScroll() {
     }
 }
 
-// ConfiguraciÃ³n de API - se adapta automÃ¡ticamente al entorno
-const API_BASE_URL = window.location.hostname === 'localhost' ? 'http://localhost:3001' : 'https://kivra-nutrir-production.up.railway.app';
+// Configuración de API - se adapta automáticamente al entorno
+const API_BASE_URL = window.location.hostname === 'localhost' 
+    ? 'http://localhost:3001' 
+    : 'https://kivra-nutrir.onrender.com';
+
+console.log('🌍 Hostname detectado:', window.location.hostname);
+console.log('🔗 API_BASE_URL configurada:', API_BASE_URL);
+console.log('🌐 URL completa actual:', window.location.href);
 
 // FunciÃ³n para cargar productos desde el backend
 function cargarProductosDesdeBackend() {

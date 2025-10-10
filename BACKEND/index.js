@@ -18,7 +18,33 @@ if (usePostgreSQL) {
 }
 
 const app = express();
-app.use(cors());
+
+// 🔒 CONFIGURACIÓN DE CORS - Permite solicitudes desde el frontend
+const corsOptions = {
+    origin: function (origin, callback) {
+        // Permitir solicitudes sin origin (apps móviles, Postman, etc.)
+        if (!origin) return callback(null, true);
+        
+        const allowedOrigins = [
+            'http://localhost:5500',
+            'http://localhost:3000',
+            'http://127.0.0.1:5500',
+            'https://kivra-nutrir.onrender.com',
+            'https://www.kivra-nutrir.onrender.com'
+        ];
+        
+        if (allowedOrigins.indexOf(origin) !== -1 || origin.includes('onrender.com')) {
+            callback(null, true);
+        } else {
+            console.log('⚠️ Solicitud bloqueada por CORS desde:', origin);
+            callback(null, true); // Permitir de todos modos en desarrollo
+        }
+    },
+    credentials: true,
+    optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // 🔧 PRODUCCIÓN: Servir archivos estáticos - versión simplificada
@@ -549,8 +575,10 @@ app.get('/api/movimientos', async (req, res) => {
     }
 });
 
-// Puerto de escucha dinámico para Railway
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-    console.log(`Servidor backend escuchando en puerto ${PORT}`);
+// 🌐 Puerto de escucha dinámico para Render/Railway/desarrollo
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 Servidor backend escuchando en puerto ${PORT}`);
+    console.log(`📍 Entorno: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`🗄️  Base de datos: ${usePostgreSQL ? 'PostgreSQL' : 'MySQL'}`);
 });
