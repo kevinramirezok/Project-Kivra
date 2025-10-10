@@ -8,58 +8,67 @@ const productos = {
     otros: [],
     promos: [
         {
-            titulo: "Promo Granolas",
-            descripcion: "Llevando 3 unidades surtidas",
+            titulo: "Promo Granolas Premium",
+            descripcion: "Llevando 3 unidades surtidas - Madre tierra, premium, fuerza natural",
             cantidadRequerida: 3,
             categoria: "granolas",
-            productos: ["GRANOLA CROCANTE", "GRANOLA ENERGÉTICA", "GRANOLA NATURAL", "GRANOLA KETO"],
-            precioPromo: 13500,
-            precioOriginal: 5000
+            productos: ["GRANOLA PREMIUM", "GRANOLA MADRE TIERRA", "GRANOLA FUERZA NATURAL"],
+            precioPromo: 27000,
+            precioOriginal: 9900
         },
         {
-            titulo: "Promo Barritas Premium",
-            descripcion: "Llevando 4 unidades surtidas",
-            cantidadRequerida: 4,
-            categoria: "barritas",
-            productos: ["BARRITA PROTEICA", "BARRITA DULCE DE LECHE", "BARRITA ENERGÉTICA", "BARRITA KETO"],
-            precioPromo: 10000,
-            precioOriginal: 2800
+            titulo: "Promo Granolas Especiales",
+            descripcion: "Llevando 3 unidades surtidas - Crocante, especial con frutas, natural, energética, crocante con manzanas y tropical",
+            cantidadRequerida: 3,
+            categoria: "granolas",
+            productos: ["GRANOLA CROCANTE", "GRANOLA ESPECIAL CON FRUTAS", "GRANOLA NATURAL", "GRANOLA ENERGÉTICA", "GRANOLA CROCANTE CON MANZANAS", "GRANOLA TROPICAL"],
+            precioPromo: 25000,
+            precioOriginal: 9500
         },
         {
-            titulo: "Promo Barritas Naturales",
-            descripcion: "Llevando 4 unidades surtidas",
+            titulo: "Promo Barritas 45g",
+            descripcion: "Llevando 4 unidades surtidas - Proteica, dulce de leche, trigo sarraceno y energética",
             cantidadRequerida: 4,
             categoria: "barritas",
-            productos: ["BARRITA NATURAL", "BARRITA GRANOLA", "BARRITA DE SESAMO", "BARRITA BOCADITO DE MANI"],
-            precioPromo: 9000,
-            precioOriginal: 2400
+            productos: ["BARRITA PROTEICA", "BARRITA DULCE DE LECHE", "BARRITA TRIGO SARRACENO", "BARRITA ENERGÉTICA"],
+            precioPromo: 4000,
+            precioOriginal: 1150
+        },
+        {
+            titulo: "Promo Barritas 55g",
+            descripcion: "Llevando 4 unidades surtidas - Natural, granola, sésamo y maní",
+            cantidadRequerida: 4,
+            categoria: "barritas",
+            productos: ["BARRITA NATURAL", "BARRITA GRANOLA", "BARRITA DE SESAMO", "BARRITA DE MANI"],
+            precioPromo: 3600,
+            precioOriginal: 1000
         },
         {
             titulo: "Promo Turrones",
-            descripcion: "Llevando 3 unidades surtidas",
-            cantidadRequerida: 3,
-            categoria: "barritas",
-            productos: ["TURRON ENERGETICO", "TURRON CROCANTE DE MANI"],
-            precioPromo: 10000,
-            precioOriginal: 3500
+            descripcion: "Llevando 5 unidades surtidas - Chía, energético, puro calcio, pura fibra y crocante maní",
+            cantidadRequerida: 5,
+            categoria: "turrones",
+            productos: ["TURRON ENERGETICO DE CHIA", "TURRON ENERGETICO", "TURRON PURO CALCIO", "TURRON PURA FIBRA", "TURRON CROCANTE DE MANI"],
+            precioPromo: 7000,
+            precioOriginal: 1600
         },
         {
-            titulo: "Promo Keto",
+            titulo: "Promo Keto Granola",
             descripcion: "Llevando 2 unidades de Granola Keto",
             cantidadRequerida: 2,
             categoria: "granolas",
             productos: ["GRANOLA KETO"],
-            precioPromo: 11000,
-            precioOriginal: 5800
+            precioPromo: 29900,
+            precioOriginal: 16800
         },
         {
-            titulo: "Promo Barritas Keto",
+            titulo: "Promo Keto Barritas",
             descripcion: "Llevando 4 unidades de Barrita Keto",
             cantidadRequerida: 4,
             categoria: "barritas",
             productos: ["BARRITA KETO"],
-            precioPromo: 11500,
-            precioOriginal: 3200
+            precioPromo: 8500,
+            precioOriginal: 2500
         }
     ]
 };
@@ -107,7 +116,7 @@ function cargarCarrito() {
 
 // Funciones del carrito
 const carritoModule = {
-    async agregarAlCarrito(nombre, precio) {
+    async agregarAlCarrito(nombre, precio, silencioso = false) {
         try {
             // ðŸš¨ VALIDACIÃ“N CRÃTICA: Tipo y formato de datos
             if (typeof nombre !== 'string' || nombre.trim().length === 0) {
@@ -175,7 +184,7 @@ const carritoModule = {
             }
 
             guardarCarrito();
-            mostrarMensaje('Producto agregado al carrito', 'exito');
+            if (!silencioso) { mostrarMensaje('Producto agregado al carrito', 'exito'); }
         } catch (error) {
             console.error('âŒ Error agregando al carrito:', error);
             mostrarMensaje(error.message, 'error');
@@ -471,7 +480,7 @@ const productosModule = {
     renderizarPromos(promos) {
         return promos.map(promo => `
             <div class="card" data-nombre="${promo.titulo}">
-                <div class="promo-icon-large">âš¡</div>
+                <div class="promo-icon-large">⚡</div>
                 <strong>${promo.titulo}</strong>
                 <span class="precio-modal precio-promo-modal">$${promo.precioPromo}</span>
                 <small class="descripcion">${promo.descripcion}</small>
@@ -670,7 +679,7 @@ function renderPromos() {
         
         return `
             <div class="producto">
-                <div class="promo-icon">âš¡</div>
+                <div class="promo-icon">⚡</div>
                 <h3>${promo.titulo}</h3>
                 <p class="descripcion">${promo.descripcion}</p>  
                 <p class="precio">$${promo.precioPromo}</p>
@@ -764,8 +773,8 @@ function agregarPromoAlCarrito(titulo, precio) {
         // Promociones Keto se agregan automÃ¡ticamente (un solo producto)
         if (promo.titulo === "Promo Keto" || promo.titulo === "Promo Barritas Keto") {
             const tituloPersonalizado = `${promo.titulo} (${promo.productos.join(', ')})`;
-            carritoModule.agregarAlCarrito(tituloPersonalizado, promo.precioPromo);
-            mostrarMensaje('PromociÃ³n agregada al carrito con Ã©xito', 'exito');
+            carritoModule.agregarAlCarrito(tituloPersonalizado, promo.precioPromo, true);
+            mostrarMensaje('Promoción agregada al carrito con éxito', 'exito');
         } else {
             // Otras promociones requieren selecciÃ³n
             mostrarModalSeleccion(promo);
@@ -776,9 +785,9 @@ function agregarPromoAlCarrito(titulo, precio) {
 function confirmarSeleccionPromo() {
     if (seleccionActual.productosSeleccionados.length === seleccionActual.cantidadRequerida) {
         const tituloPersonalizado = `${seleccionActual.promo.titulo} (${seleccionActual.productosSeleccionados.join(', ')})`;
-        carritoModule.agregarAlCarrito(tituloPersonalizado, seleccionActual.promo.precioPromo);
+        carritoModule.agregarAlCarrito(tituloPersonalizado, seleccionActual.promo.precioPromo, true);
         document.getElementById('modal-seleccion').classList.remove('activo');
-        mostrarMensaje('PromociÃ³n agregada al carrito con Ã©xito', 'exito');
+        mostrarMensaje('Promoción agregada al carrito con éxito', 'exito');
         
         // Limpiar selecciÃ³n actual
         seleccionActual = {
@@ -1082,3 +1091,5 @@ function actualizarStockProducto(id, nuevoStock) {
     })
     .catch(() => mostrarMensaje('Error de conexiÃ³n con el backend', 'error'));
 }
+
+
