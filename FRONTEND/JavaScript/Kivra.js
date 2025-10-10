@@ -9,7 +9,7 @@ const productos = {
     promos: [
         {
             titulo: "Promo Granolas Premium",
-            descripcion: "Llevando 3 unidades surtidas - Madre tierra, premium, fuerza natural",
+            descripcion: "Llevando 3 unidades SURTIDAS",
             cantidadRequerida: 3,
             categoria: "granolas",
             productos: ["GRANOLA PREMIUM", "GRANOLA MADRE TIERRA", "GRANOLA FUERZA NATURAL"],
@@ -18,7 +18,7 @@ const productos = {
         },
         {
             titulo: "Promo Granolas Especiales",
-            descripcion: "Llevando 3 unidades surtidas - Crocante, especial con frutas, natural, energética, crocante con manzanas y tropical",
+            descripcion: "Llevando 3 unidades SURTIDAS",
             cantidadRequerida: 3,
             categoria: "granolas",
             productos: ["GRANOLA CROCANTE", "GRANOLA ESPECIAL CON FRUTAS", "GRANOLA NATURAL", "GRANOLA ENERGÉTICA", "GRANOLA CROCANTE CON MANZANAS", "GRANOLA TROPICAL"],
@@ -27,7 +27,7 @@ const productos = {
         },
         {
             titulo: "Promo Barritas 45g",
-            descripcion: "Llevando 4 unidades surtidas - Proteica, dulce de leche, trigo sarraceno y energética",
+            descripcion: "Llevando 4 unidades SURTIDAS",
             cantidadRequerida: 4,
             categoria: "barritas",
             productos: ["BARRITA PROTEICA", "BARRITA DULCE DE LECHE", "BARRITA TRIGO SARRACENO", "BARRITA ENERGÉTICA"],
@@ -36,7 +36,7 @@ const productos = {
         },
         {
             titulo: "Promo Barritas 55g",
-            descripcion: "Llevando 4 unidades surtidas - Natural, granola, sésamo y maní",
+            descripcion: "Llevando 4 unidades SURTIDAS",
             cantidadRequerida: 4,
             categoria: "barritas",
             productos: ["BARRITA NATURAL", "BARRITA GRANOLA", "BARRITA DE SESAMO", "BARRITA DE MANI"],
@@ -45,7 +45,7 @@ const productos = {
         },
         {
             titulo: "Promo Turrones",
-            descripcion: "Llevando 5 unidades surtidas - Chía, energético, puro calcio, pura fibra y crocante maní",
+            descripcion: "Llevando 5 unidades SURTIDAS",
             cantidadRequerida: 5,
             categoria: "turrones",
             productos: ["TURRON ENERGETICO DE CHIA", "TURRON ENERGETICO", "TURRON PURO CALCIO", "TURRON PURA FIBRA", "TURRON CROCANTE DE MANI"],
@@ -478,20 +478,28 @@ const productosModule = {
     },
 
     renderizarPromos(promos) {
-        return promos.map(promo => `
+        return promos.map(promo => {
+            // Capitalizar nombres de productos para mostrar
+            const nombresCapitalizados = promo.productos.map(nombre => 
+                nombre.toLowerCase().split(' ').map(palabra => 
+                    palabra.charAt(0).toUpperCase() + palabra.slice(1)
+                ).join(' ')
+            );
+            
+            return `
             <div class="card" data-nombre="${promo.titulo}">
                 <div class="promo-icon-large">⚡</div>
                 <strong>${promo.titulo}</strong>
                 <span class="precio-modal precio-promo-modal">$${promo.precioPromo}</span>
                 <small class="descripcion">${promo.descripcion}</small>
                 <div class="promo-productos">
-                    <small>Incluye: ${promo.productos.join(', ')}</small>
+                    <small>Incluye: ${nombresCapitalizados.join(', ')}</small>
                 </div>
                 <button class="btnagregar" onclick="agregarPromoAlCarrito('${promo.titulo}', ${promo.precioPromo})">
                     Agregar
                 </button>
             </div>
-        `).join('');
+        `}).join('');
     },
 
     actualizarControlesPaginacion(pagina, anterior, siguiente, total, tipo) {
@@ -677,6 +685,13 @@ function renderPromos() {
             todosLosProductos.some(prod => prod.nombre === nombrePromo)
         );
         
+        // Capitalizar nombres de productos para mostrar
+        const nombresCapitalizados = productosDisponibles.map(nombre => 
+            nombre.toLowerCase().split(' ').map(palabra => 
+                palabra.charAt(0).toUpperCase() + palabra.slice(1)
+            ).join(' ')
+        );
+        
         return `
             <div class="producto">
                 <div class="promo-icon">⚡</div>
@@ -684,7 +699,7 @@ function renderPromos() {
                 <p class="descripcion">${promo.descripcion}</p>  
                 <p class="precio">$${promo.precioPromo}</p>
                 <div class="promo-productos">
-                    <small>Incluye: ${productosDisponibles.join(', ')}</small>
+                    <small>Incluye: ${nombresCapitalizados.join(', ')}</small>
                 </div>
                 <button class="btnagregar" onclick="agregarPromoAlCarrito('${promo.titulo}', ${promo.precioPromo})">
                     Agregar al carrito
