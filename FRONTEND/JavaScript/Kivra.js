@@ -1,74 +1,65 @@
 /*=================================
   DATOS DE PRODUCTOS - SOLO FALLBACK
 ==================================*/
-// Estructura vacÃ­a que se llenarÃ¡ desde el backend
+// Estructura vacía que se llenará desde el backend
 const productos = {
     barritas: [],
     granolas: [],
     otros: [],
     promos: [
         {
-            titulo: "Promo Granolas Premium",
+            titulo: "Promo Granolas",
             descripcion: "Llevando 3 unidades surtidas",
             cantidadRequerida: 3,
             categoria: "granolas",
-            productos: ["Granola Premium", "Granola Madre Tierra", "Granola Fuerza Natural"],
-            precioPromo: 27000,
-            precioOriginal: 9900
-        },
-        {
-            titulo: "Promo Granolas Especiales",
-            descripcion: "Llevando 3 unidades surtidas",
-            cantidadRequerida: 3,
-            categoria: "granolas",
-            productos: ["Granola Crocante", "Granola Especial con Frutas", "Granola Natural", "Granola EnergÃ©tica", "Granola Crocante con Manzanas", "Granola Tropical"],
-            precioPromo: 25000,
-            precioOriginal: 9500
+            productos: ["GRANOLA CROCANTE", "GRANOLA ENERGÉTICA", "GRANOLA NATURAL", "GRANOLA KETO"],
+            precioPromo: 13500,
+            precioOriginal: 5000
         },
         {
             titulo: "Promo Barritas Premium",
             descripcion: "Llevando 4 unidades surtidas",
             cantidadRequerida: 4,
             categoria: "barritas",
-            productos: ["Barrita Proteica", "Barrita Dulce de Leche", "Barrita Trigo Sarraceno", "Barrita EnergÃ©tica"],
-            precioPromo: 4000,
-            precioOriginal: 1150
+            productos: ["BARRITA PROTEICA", "BARRITA DULCE DE LECHE", "BARRITA ENERGÉTICA", "BARRITA KETO"],
+            precioPromo: 10000,
+            precioOriginal: 2800
         },
         {
             titulo: "Promo Barritas Naturales",
             descripcion: "Llevando 4 unidades surtidas",
             cantidadRequerida: 4,
             categoria: "barritas",
-            productos: ["Barrita Natural", "Barrita Granola", "Barrita de SÃ©samo", "Barrita de ManÃ­"],
-            precioPromo: 3600,
-            precioOriginal: 1000
+            productos: ["BARRITA NATURAL", "BARRITA GRANOLA", "BARRITA DE SESAMO", "BARRITA BOCADITO DE MANI"],
+            precioPromo: 9000,
+            precioOriginal: 2400
         },
         {
             titulo: "Promo Turrones",
-            descripcion: "Llevando 5 unidades surtidas",
-            cantidadRequerida: 5,
+            descripcion: "Llevando 3 unidades surtidas",
+            cantidadRequerida: 3,
             categoria: "barritas",
-            productos: ["TurrÃ³n EnergÃ©tico de ChÃ­a", "TurrÃ³n EnergÃ©tico", "TurrÃ³n Puro Calcio", "TurrÃ³n Pura Fibra", "TurrÃ³n Crocante de ManÃ­"],
-            precioPromo: 7000,
-            precioOriginal: 1600
+            productos: ["TURRON ENERGETICO", "TURRON CROCANTE DE MANI"],
+            precioPromo: 10000,
+            precioOriginal: 3500
         },
         {
             titulo: "Promo Keto",
             descripcion: "Llevando 2 unidades de Granola Keto",
             cantidadRequerida: 2,
             categoria: "granolas",
-            productos: ["Granola Keto"],
-            precioPromo: 29900,
-            precioOriginal: 16800
+            productos: ["GRANOLA KETO"],
+            precioPromo: 11000,
+            precioOriginal: 5800
         },
         {
             titulo: "Promo Barritas Keto",
             descripcion: "Llevando 4 unidades de Barrita Keto",
             cantidadRequerida: 4,
             categoria: "barritas",
-            productos: ["Barrita Keto"],
-            precioPromo: 8500,
-            precioOriginal: 2500
+            productos: ["BARRITA KETO"],
+            precioPromo: 11500,
+            precioOriginal: 3200
         }
     ]
 };
