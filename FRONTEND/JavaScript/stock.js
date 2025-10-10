@@ -15,8 +15,13 @@ if (sessionStorage.getItem('kivra_auth') !== PASSWORD) {
 // =============================
 // CONSULTAR PRODUCTOS DESDE BACKEND
 // =============================
-// ConfiguraciÃ³n de API - se adapta automÃ¡ticamente al entorno
-const API_BASE_URL = window.location.hostname === 'localhost' ? 'http://localhost:3001' : 'https://kivra-nutrir-production.up.railway.app';
+// Configuración de API - se adapta automáticamente al entorno
+const API_BASE_URL = window.location.hostname === 'localhost' 
+    ? 'http://localhost:3001' 
+    : 'https://kivra-nutrir.onrender.com';
+
+console.log('🌍 Hostname detectado (Stock Admin):', window.location.hostname);
+console.log('🔗 API_BASE_URL configurada (Stock Admin):', API_BASE_URL);
 
 let productos = [];
 
