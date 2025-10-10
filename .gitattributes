@@ -1,0 +1,19 @@
+# Prevenir conversión automática de finales de línea
+* text=auto
+
+# Archivos JavaScript con encoding UTF-8
+*.js text eol=lf encoding=UTF-8
+*.html text eol=lf encoding=UTF-8
+*.css text eol=lf encoding=UTF-8
+*.json text eol=lf encoding=UTF-8
+
+# Archivos de configuración
+.gitignore text eol=lf
+.gitattributes text eol=lf
+
+# Imágenes (binarios)
+*.jpg binary
+*.png binary
+*.gif binary
+*.ico binary
+*.svg binary
