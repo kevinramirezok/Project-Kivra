@@ -1,7 +1,4 @@
-﻿// =============================
-// PROTECCIÓN SIMPLE POR CONTRASEÑA
-// =============================
-const PASSWORD = "kivra25"; // Cambia esta contraseña por la que quieras
+﻿const PASSWORD = "kivra25";
 if (sessionStorage.getItem('kivra_auth') !== PASSWORD) {
     const ingreso = prompt("Ingrese la contraseña para acceder al panel de stock:");
     if (ingreso !== PASSWORD) {
@@ -12,16 +9,16 @@ if (sessionStorage.getItem('kivra_auth') !== PASSWORD) {
     }
 }
 
-// =============================
-// CONSULTAR PRODUCTOS DESDE BACKEND
-// =============================
-// Configuración de API - se adapta automáticamente al entorno
 const API_BASE_URL = window.location.hostname === 'localhost' 
     ? 'http://localhost:3001' 
     : 'https://kivra-nutrir.onrender.com';
 
-console.log('🌍 Hostname detectado (Stock Admin):', window.location.hostname);
-console.log('🔗 API_BASE_URL configurada (Stock Admin):', API_BASE_URL);
+// Configuración de ruta de imágenes
+const IMAGES_BASE_URL = `${API_BASE_URL}/imagenes`;
+
+console.log('Hostname detectado (Stock Admin):', window.location.hostname);
+console.log('API_BASE_URL configurada (Stock Admin):', API_BASE_URL);
+console.log('IMAGES_BASE_URL configurada (Stock Admin):', IMAGES_BASE_URL);
 
 let productos = [];
 
@@ -38,9 +35,6 @@ function cargarProductos() {
         });
 }
 
-// =============================
-// RENDERIZAR PRODUCTOS Y EDITAR STOCK
-// =============================
 function renderizarProductos() {
     const grid = document.getElementById('products-grid');
     grid.innerHTML = productos.map(prod => `
@@ -60,14 +54,12 @@ function actualizarStock(id) {
     const input = document.getElementById(`stock-input-${id}`);
     const nuevoStock = parseInt(input.value);
     
-    // ðŸš¨ VALIDACIÃ“N CRÃTICA: Stock no puede ser negativo
     if (isNaN(nuevoStock) || nuevoStock < 0) {
         mostrarAlerta('El stock no puede ser negativo ni inválido', 'danger');
         input.focus();
         return;
     }
     
-    // ðŸ”’ VALIDACIÃ“N: Stock máximo razonable
     if (nuevoStock > 9999) {
         mostrarAlerta('El stock no puede ser mayor a 9999', 'danger');
         input.focus();
@@ -80,31 +72,28 @@ function actualizarStock(id) {
         body: JSON.stringify({ stock: nuevoStock, accion: 'edicion' })
     })
         .then(res => {
-            console.log('ðŸ” Status respuesta:', res.status);
+            console.log('Status respuesta:', res.status);
             if (res.ok) {
                 // Si el status es 200-299, consideramos éxito
                 mostrarAlerta('Stock actualizado correctamente', 'success');
                 cargarProductos();
                 return res.json().catch(() => ({ success: true }));
             } else {
-                console.log('âŒ Status de error:', res.status);
+                console.log('Status de error:', res.status);
                 mostrarAlerta(`Error HTTP ${res.status} al actualizar stock`, 'danger');
                 return res.json().catch(() => ({ success: false }));
             }
         })
         .then(data => {
-            console.log('ðŸ” Datos recibidos:', data);
+            console.log('Datos recibidos:', data);
             // Ya manejamos el éxito arriba, aquí solo logueamos
         })
         .catch(error => {
-            console.error('âŒ Error completo:', error);
+            console.error('Error completo:', error);
             mostrarAlerta('Error de conexión con el backend', 'danger');
         });
 }
 
-// =============================
-// ESTADÃSTICAS DE STOCK
-// =============================
 function actualizarEstadisticas() {
     document.getElementById('total-products').textContent = productos.length;
     document.getElementById('low-stock').textContent = productos.filter(p => p.stock <= 5 && p.stock > 0).length;
@@ -113,9 +102,6 @@ function actualizarEstadisticas() {
     document.getElementById('total-value').textContent = `$${totalValue}`;
 }
 
-// =============================
-// BUSCADOR DE PRODUCTOS
-// =============================
 document.getElementById('search-input').addEventListener('input', filterProducts);
 function filterProducts() {
     const texto = document.getElementById('search-input').value.toLowerCase();
@@ -155,7 +141,7 @@ function renderizarProductosFiltrados(lista) {
         <div class="product-card${prod.stock === 0 ? ' out-of-stock' : prod.stock <= 5 ? ' low-stock' : ''}">
             <button class="btn-eliminar" title="Eliminar" onclick="eliminarProducto(${prod.id})"><i class="bi bi-trash"></i></button>
             <span class="stock-badge ${prod.stock === 0 ? 'low' : prod.stock <= 5 ? 'medium' : 'high'}">Stock: ${prod.stock}</span>
-            <img src="imagenes/${prod.imagen}" alt="${prod.nombre}" style="width:100%;max-height:120px;object-fit:contain;margin-bottom:10px;border-radius:8px;" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDEyMCAxMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik02MCA0NUw3NSA3NUg0NUw2MCA0NVoiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+'">
+            <img src="${IMAGES_BASE_URL}/${prod.imagen}" alt="${prod.nombre}" style="width:100%;max-height:120px;object-fit:contain;margin-bottom:10px;border-radius:8px;" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDEyMCAxMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik02MCA0NUw3NSA3NUg0NUw2MCA0NVoiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+'">
             <h3>${prod.nombre}</h3>
             <div class="price">$${prod.precio}</div>
             <div style="margin-bottom:8px;color:var(--marron-claro);font-size:0.95rem;">${prod.descripcion || ''}</div>
@@ -171,38 +157,32 @@ function renderizarProductosFiltrados(lista) {
     `).join('');
 }
 
-// =============================
-// ELIMINAR PRODUCTO
-// =============================
 function eliminarProducto(id) {
     if (!confirm('¿Seguro que quieres eliminar este producto?')) return;
     fetch(`${API_BASE_URL}/api/productos/${id}`, {
         method: 'DELETE'
     })
         .then(res => {
-            console.log('ðŸ” [ELIMINAR] Status:', res.status);
+            console.log('[ELIMINAR] Status:', res.status);
             if (res.ok) {
                 mostrarAlerta('Producto eliminado correctamente', 'success');
                 cargarProductos();
                 return res.json().catch(() => ({ success: true }));
             } else {
-                console.log('âŒ [ELIMINAR] Error HTTP:', res.status);
+                console.log('[ELIMINAR] Error HTTP:', res.status);
                 mostrarAlerta('Error al eliminar producto', 'danger');
                 return res.json().catch(() => ({ success: false }));
             }
         })
         .then(data => {
-            console.log('ðŸ” [ELIMINAR] Respuesta:', data);
+            console.log('[ELIMINAR] Respuesta:', data);
         })
         .catch(error => {
-            console.error('âŒ [ELIMINAR] Error de conexión:', error);
+            console.error('[ELIMINAR] Error de conexion:', error);
             mostrarAlerta('Error de conexión con el backend', 'danger');
         });
 }
 
-// =============================
-// DESCONTAR STOCK MANUALMENTE (VENTA)
-// =============================
 function confirmarVenta(id, stockActual) {
     const cantidad = parseInt(prompt('¿Cuántas unidades deseas descontar del stock?'));
     if (isNaN(cantidad) || cantidad <= 0) {
@@ -214,8 +194,6 @@ function confirmarVenta(id, stockActual) {
         return;
     }
     
-    // ðŸš¨ RACE CONDITION PREVENTION: Enviar cantidad a descontar, no stock final
-    // El backend calculará el stock final atómicamente
     fetch(`${API_BASE_URL}/api/productos/${id}/venta`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -236,9 +214,6 @@ function confirmarVenta(id, stockActual) {
         .catch(() => mostrarAlerta('Error de conexión con el backend', 'danger'));
 }
 
-// =============================
-// ABRIR Y CERRAR MODAL
-// =============================
 let productoEditando = null;
 
 function openAddProductModal() {
@@ -273,9 +248,6 @@ function closeModal() {
     document.getElementById('product-modal').classList.remove('active');
 }
 
-// =============================
-// GUARDAR PRODUCTO NUEVO
-// =============================
 function saveProduct(e) {
     e.preventDefault();
     const nombre = document.getElementById('product-name').value.trim();
@@ -306,7 +278,7 @@ function saveProduct(e) {
         body: formData
     })
         .then(res => {
-            console.log('ðŸ” [GUARDAR/EDITAR] Status:', res.status);
+            console.log('[GUARDAR/EDITAR] Status:', res.status);
             if (res.ok) {
                 // Status 200-299 = éxito
                 mostrarAlerta(productoEditando ? 'Producto actualizado correctamente' : 'Producto agregado correctamente', 'success');
@@ -314,29 +286,23 @@ function saveProduct(e) {
                 cargarProductos();
                 return res.json().catch(() => ({ success: true }));
             } else {
-                console.log('âŒ [GUARDAR/EDITAR] Error HTTP:', res.status);
+                console.log('[GUARDAR/EDITAR] Error HTTP:', res.status);
                 mostrarAlerta(productoEditando ? 'Error al actualizar producto' : 'Error al agregar producto', 'danger');
                 return res.json().catch(() => ({ success: false }));
             }
         })
         .then(data => {
-            console.log('ðŸ” [GUARDAR/EDITAR] Respuesta:', data);
+            console.log('[GUARDAR/EDITAR] Respuesta:', data);
         })
         .catch(error => {
-            console.error('âŒ [GUARDAR/EDITAR] Error de conexión:', error);
+            console.error('[GUARDAR/EDITAR] Error de conexion:', error);
             mostrarAlerta('Error de conexión con el backend', 'danger');
         });
 }
 
-// =============================
-// INICIALIZAR PANEL
-// =============================
 document.getElementById('product-form').onsubmit = saveProduct;
 cargarProductos();
 
-// =============================
-// REPORTE DE STOCK BAJO/SIN STOCK
-// =============================
 function mostrarReporteStockBajo() {
     // Considera stock mínimo 5 si no está definido
     const criticos = productos.filter(p => p.stock === 0 || p.stock <= (p.min_stock || 5));
@@ -352,9 +318,6 @@ function mostrarReporteStockBajo() {
     mostrarAlerta(html, 'warning');
 }
 
-// =============================
-// EXPORTAR INVENTARIO A CSV
-// =============================
 function exportarInventarioCSV() {
     if (!productos.length) {
         mostrarAlerta('No hay productos para exportar.', 'warning');
@@ -382,9 +345,6 @@ function exportarInventarioCSV() {
     mostrarAlerta('Inventario exportado correctamente.', 'success');
 }
 
-// =============================
-// ALERTAS MODERNAS
-// =============================
 function mostrarAlerta(mensaje, tipo = 'info', esPrompt = false, callback = null, esCantidad = false) {
     const container = document.getElementById('alerts-container');
     container.innerHTML = '';
@@ -424,9 +384,6 @@ function mostrarAlerta(mensaje, tipo = 'info', esPrompt = false, callback = null
     }
 }
 
-// =============================
-// FILTROS Y EXPORTACIÃ“N HISTORIAL
-// =============================
 let movimientosGlobal = [];
 
 // Abrir modal de historial y cargar movimientos

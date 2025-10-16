@@ -106,11 +106,62 @@
             color: var(--rojo);
         }
 
+        /* Contenedor del historial con scroll */
+        #historial-table-container {
+            max-height: 500px;
+            overflow-y: auto;
+            overflow-x: auto;
+            border: 1px solid var(--marron-claro);
+            border-radius: 8px;
+            background: white;
+        }
+
+        #historial-table-container::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        #historial-table-container::-webkit-scrollbar-track {
+            background: var(--crema-claro);
+            border-radius: 4px;
+        }
+
+        #historial-table-container::-webkit-scrollbar-thumb {
+            background: var(--marron-claro);
+            border-radius: 4px;
+        }
+
+        #historial-table-container::-webkit-scrollbar-thumb:hover {
+            background: var(--marron);
+        }
+
         .products-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
             margin-bottom: 30px;
+            max-height: 70vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 10px;
+        }
+
+        .products-grid::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .products-grid::-webkit-scrollbar-track {
+            background: var(--crema-claro);
+            border-radius: 4px;
+        }
+
+        .products-grid::-webkit-scrollbar-thumb {
+            background: var(--marron-claro);
+            border-radius: 4px;
+        }
+
+        .products-grid::-webkit-scrollbar-thumb:hover {
+            background: var(--marron);
         }
 
         .product-card {

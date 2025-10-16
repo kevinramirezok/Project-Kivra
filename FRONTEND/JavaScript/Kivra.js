@@ -1,4 +1,4 @@
-/*=================================
+﻿/*=================================
   DATOS DE PRODUCTOS - SOLO FALLBACK
 ==================================*/
 // Estructura vacía que se llenará desde el backend
@@ -120,11 +120,11 @@ const carritoModule = {
         try {
             // ðŸš¨ VALIDACIÃ“N CRÃTICA: Tipo y formato de datos
             if (typeof nombre !== 'string' || nombre.trim().length === 0) {
-                throw new Error('Nombre del producto invÃ¡lido');
+                throw new Error('Nombre del producto invalido');
             }
             
             if (typeof precio !== 'number' || isNaN(precio) || precio <= 0) {
-                throw new Error('Precio del producto invÃ¡lido');
+                throw new Error('Precio del producto invalido');
             }
             
             if (nombre.trim().length > 255) {
@@ -161,17 +161,17 @@ const carritoModule = {
                 }
                 
                 if (cantidadEnCarrito >= 10) {
-                    throw new Error('MÃ¡ximo 10 unidades por producto');
+                    throw new Error('Maximo 10 unidades por producto');
                 }
                 
-                console.log('âœ… Stock validado:', producto.stock, 'En carrito:', cantidadEnCarrito);
+                console.log('Stock validado:', producto.stock, 'En carrito:', cantidadEnCarrito);
                 
             } catch (fetchError) {
                 console.warn('âš ï¸ No se pudo validar stock, continuando...', fetchError.message);
                 // Continuar sin validaciÃ³n de stock si el servidor no responde
             }
 
-            // Proceder con la adiciÃ³n al carrito
+            // Proceder con la adicion al carrito
             const nombreLimpio = nombre.trim();
             const itemExistente = carrito.find(item => item.nombre === nombreLimpio);
             
@@ -194,17 +194,25 @@ const carritoModule = {
         this.actualizarMiniCarrito();
     },
 
-    eliminarDelCarrito(nombre) {
-        const itemIndex = carrito.findIndex(item => item.nombre === nombre);
-        if (itemIndex !== -1) {
+    eliminarDelCarrito(nombreOIndex) {
+        let itemIndex;
+        // Si es un numero, es el indice directo del carrito
+        if (typeof nombreOIndex === 'number') {
+            itemIndex = nombreOIndex;
+        } else {
+            // Si es string, buscar por nombre
+            itemIndex = carrito.findIndex(item => item.nombre === nombreOIndex);
+        }
+        
+        if (itemIndex !== -1 && carrito[itemIndex]) {
             const item = carrito[itemIndex];
+            total -= item.precio;
             if (item.cantidad > 1) {
                 item.cantidad--;
-                total -= item.precio;
             } else {
-                total -= item.precio;
                 carrito.splice(itemIndex, 1);
             }
+            guardarCarrito();
             this.actualizarCarrito();
             this.actualizarMiniCarrito();
         }
@@ -213,6 +221,7 @@ const carritoModule = {
     vaciarCarrito() {
         carrito = [];
         total = 0;
+        guardarCarrito();
         this.actualizarCarrito();
         this.actualizarMiniCarrito();
     },
@@ -223,6 +232,7 @@ const carritoModule = {
             .reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
         total -= precioTotal;
         carrito = carrito.filter(item => item.nombre !== nombre);
+        guardarCarrito();
         this.actualizarCarrito();
         this.actualizarMiniCarrito();
     },
@@ -317,7 +327,7 @@ const carritoModule = {
                     <span class="mini-precio">$${info.subtotal}</span>
                     <div class="mini-acciones">
                         <button class="mini-eliminar-uno" data-producto="${escapeHtml(nombre)}" data-accion="eliminar-uno">-</button>
-                        <button class="mini-eliminar-todo" data-producto="${escapeHtml(nombre)}" data-accion="eliminar-todo">Ã—</button>
+                        <button class="mini-eliminar-todo" data-producto="${escapeHtml(nombre)}" data-accion="eliminar-todo">×</button>
                     </div>
                 </div>
             `).join('');
@@ -386,7 +396,7 @@ const carritoModule = {
                 const productoActual = productosActuales.find(p => p.nombre === itemCarrito.nombre);
                 
                 if (!productoActual) {
-                    productosNoDisponibles.push(`${itemCarrito.nombre} (ya no estÃ¡ disponible)`);
+                    productosNoDisponibles.push(`${itemCarrito.nombre} (ya no esta disponible)`);
                 } else if (productoActual.stock === 0) {
                     productosNoDisponibles.push(`${itemCarrito.nombre} (sin stock)`);
                 } else if (productoActual.precio !== itemCarrito.precio) {
@@ -411,14 +421,14 @@ const carritoModule = {
                 return;
             }
             
-            console.log('âœ… Stock validado correctamente');
+            console.log('Stock validado correctamente');
             
             // Proceder con la compra
-            let mensaje = "Â¡Hola! Quiero pedir:\n";
+            let mensaje = "¡Hola! Quiero pedir:\n";
             carrito.forEach(item => {
                 mensaje += `- ${item.nombre} ($${item.precio})\n`;
             });
-            mensaje += `Total: $${total}\nÂ¿Podemos coordinar el retiro?`;
+            mensaje += `Total: $${total}\n¿Podemos coordinar el retiro?`;
 
             window.open(`https://wa.me/5493482676690?text=${encodeURIComponent(mensaje)}`, "_blank");
 
@@ -446,7 +456,7 @@ const productosModule = {
         const btnAnterior = document.getElementById("modal-anterior");
         const btnSiguiente = document.getElementById("modal-siguiente");
 
-        // Ocultar elementos de paginaciÃ³n
+        // Ocultar elementos de paginacion
         modalPagina.style.display = 'none';
         btnAnterior.style.display = 'none';
         btnSiguiente.style.display = 'none';
@@ -466,11 +476,11 @@ const productosModule = {
     renderizarProductos(productos) {
         return productos.map(prod => `
             <div class="card" data-nombre="${prod.nombre}">
-                <img src="imagenes/${prod.imagen}" alt="${prod.nombre}" class="producto-img">
+                <img src="${IMAGES_BASE_URL}/${prod.imagen}" alt="${prod.nombre}" class="producto-img">
                 <strong>${prod.nombre}</strong>
                 <span class="precio-modal">$${prod.precio}</span>
                 <small class="descripcion">${prod.descripcion}</small>
-                <button class="btnagregar" onclick="carritoModule.agregarAlCarrito('${prod.nombre}', ${prod.precio})">
+                <button class="btnagregar" data-nombre="${prod.nombre}" data-precio="${prod.precio}">
                     Agregar
                 </button>
             </div>
@@ -488,7 +498,7 @@ const productosModule = {
             
             return `
             <div class="card" data-nombre="${promo.titulo}">
-                <div class="promo-icon-large">⚡</div>
+                <div class="promo-icon-large"><i class="bi bi-gift-fill"></i></div>
                 <strong>${promo.titulo}</strong>
                 <span class="precio-modal precio-promo-modal">$${promo.precioPromo}</span>
                 <small class="descripcion">${promo.descripcion}</small>
@@ -525,13 +535,13 @@ const productosModule = {
         const subtitulos = document.querySelectorAll(".productos-subtitulo");
         const seccionesProductos = document.querySelectorAll(".productos-seccion");
 
-        // FunciÃ³n auxiliar para verificar si un producto coincide con la bÃºsqueda
+        // Funcion auxiliar para verificar si un producto coincide con la busqueda
         const coincideConBusqueda = (producto) => {
             return producto.nombre.toLowerCase().includes(texto) ||
                 producto.descripcion.toLowerCase().includes(texto);
         };
 
-        // FunciÃ³n auxiliar para verificar si una promo coincide con la bÃºsqueda
+        // Funcion auxiliar para verificar si una promo coincide con la busqueda
         const coincideConBusquedaPromo = (promo) => {
             return promo.titulo.toLowerCase().includes(texto) ||
                 promo.descripcion.toLowerCase().includes(texto) ||
@@ -544,7 +554,7 @@ const productosModule = {
         const promosCoincidentes = productos.promos.filter(coincideConBusquedaPromo);
         const hayResultados = granolasCoincidentes.length > 0 || barritasCoincidentes.length > 0 || promosCoincidentes.length > 0;
 
-        // Mostrar u ocultar subtÃ­tulos y secciones
+        // Mostrar u ocultar subtitulos y secciones
         subtitulos.forEach(subtitulo => {
             subtitulo.style.display = texto ? "none" : "block";
         });
@@ -553,62 +563,74 @@ const productosModule = {
             seccion.style.display = texto ? "none" : "block";
         });
 
-        // FunciÃ³n para renderizar mensaje de no resultados
+        // Funcion para renderizar mensaje de no resultados
         const mensajeNoResultados = `
         <div class="no-resultados" style="text-align: center; padding: 20px; width: 100%;">
             <h3 style="color: var(--marron); font-size: 1.8rem;">No se encontraron productos que coincidan con "${texto}"</h3>
         </div>
     `;
 
-        // Actualizar contenido de los contenedores
-        if (containerGranola) {
-            containerGranola.innerHTML = granolasCoincidentes.length > 0 ?
-                granolasCoincidentes.map(producto => `
-                <div class="producto">
-                    <img src="imagenes/${producto.imagen}" alt="${producto.nombre}">
-                    <h3>${producto.nombre}</h3>
-                    <p class="descripcion">${producto.descripcion}</p>
-                    <p class="precio">$${producto.precio}</p>
-                    <button class="btnagregar" onclick="carritoModule.agregarAlCarrito('${producto.nombre}', ${producto.precio})">
-                        Agregar al carrito
-                    </button>
-                </div>
-            `).join('') :
-                (texto && !hayResultados ? mensajeNoResultados : '');
+        // Si hay texto de busqueda, mostrar TODOS los resultados filtrados
+        // Si no hay texto, restaurar la vista normal (solo 4 productos por seccion)
+        if (texto) {
+            // Mostrar TODOS los resultados de busqueda
+            if (containerGranola) {
+                containerGranola.innerHTML = granolasCoincidentes.length > 0 ?
+                    granolasCoincidentes.map(producto => `
+                    <div class="producto">
+                        <img src="${IMAGES_BASE_URL}/${producto.imagen}" alt="${producto.nombre}">
+                        <h3>${producto.nombre}</h3>
+                        <p class="descripcion">${producto.descripcion}</p>
+                        <p class="precio">$${producto.precio}</p>
+                        <button class="btnagregar" data-nombre="${producto.nombre}" data-precio="${producto.precio}">
+                            Agregar al carrito
+                        </button>
+                    </div>
+                `).join('') :
+                    (!hayResultados ? mensajeNoResultados : '');
+            }
+
+            if (containerBarritas) {
+                containerBarritas.innerHTML = barritasCoincidentes.length > 0 ?
+                    barritasCoincidentes.map(producto => `
+                    <div class="producto">
+                        <img src="${IMAGES_BASE_URL}/${producto.imagen}" alt="${producto.nombre}">
+                        <h3>${producto.nombre}</h3>
+                        <p class="descripcion">${producto.descripcion}</p>
+                        <p class="precio">$${producto.precio}</p>
+                        <button class="btnagregar" data-nombre="${producto.nombre}" data-precio="${producto.precio}">
+                            Agregar al carrito
+                        </button>
+                    </div>
+                `).join('') : '';
+            }
+
+            if (containerPromos) {
+                containerPromos.innerHTML = promosCoincidentes.length > 0 ?
+                    promosCoincidentes.map(promo => `
+                    <div class="producto">
+                        <div class="promo-icon"><i class="bi bi-gift-fill"></i></div>
+                        <h3>${promo.titulo}</h3>
+                        <p class="descripcion">${promo.descripcion}</p>
+                        <p class="precio">$${promo.precioPromo}</p>
+                        <button class="btnagregar" onclick="agregarPromoAlCarrito('${promo.titulo}', ${promo.precioPromo})">
+                            Agregar al carrito
+                        </button>
+                    </div>
+                `).join('') : '';
+            }
+        } else {
+            // Restaurar vista normal: resetear variables y renderizar solo 4 productos
+            mostrandoTodasBarritas = false;
+            mostrandoTodosGranolas = false;
+            mostrandoPromos = false;
+            
+            renderGranolas();
+            renderBarritas();
+            renderPromos();
         }
 
-        if (containerBarritas) {
-            containerBarritas.innerHTML = barritasCoincidentes.length > 0 ?
-                barritasCoincidentes.map(producto => `
-                <div class="producto">
-                    <img src="imagenes/${producto.imagen}" alt="${producto.nombre}">
-                    <h3>${producto.nombre}</h3>
-                    <p class="descripcion">${producto.descripcion}</p>
-                    <p class="precio">$${producto.precio}</p>
-                    <button class="btnagregar" onclick="carritoModule.agregarAlCarrito('${producto.nombre}', ${producto.precio})">
-                        Agregar al carrito
-                    </button>
-                </div>
-            `).join('') :
-                (texto && !hayResultados && !containerGranola.innerHTML && !containerPromos.innerHTML ? mensajeNoResultados : '');
-        }
-
-        if (containerPromos) {
-            containerPromos.innerHTML = promosCoincidentes.length > 0 ?
-                promosCoincidentes.map(promo => `
-                <div class="producto">
-                    <div class="promo-icon">âš¡</div>
-                    <h3>${promo.titulo}</h3>
-                    <p class="descripcion">${promo.descripcion}</p>
-                    <p class="precio">$${promo.precioPromo}</p>
-                    <button class="btnagregar" onclick="agregarPromoAlCarrito('${promo.titulo}', ${promo.precioPromo})">
-                        Agregar al carrito
-                    </button>
-                </div>
-            `).join('') : '';
-        }
-
-        // Actualizar visibilidad de los botones "Ver mÃ¡s"
+        // Actualizar visibilidad de los botones "Ver mas"
         const btnVerMasGranola = document.getElementById("verMasGranola");
         const btnVerMasBarritas = document.getElementById("verMasBarritas");
         const btnVerMasPromos = document.getElementById("verMasPromos");
@@ -639,16 +661,16 @@ function renderBarritas() {
     const productosAMostrar = mostrandoTodasBarritas ? productos.barritas : productos.barritas.slice(0, 4);
 
     contenedor.innerHTML = productosAMostrar.map(producto => {
-        // Convertir precio a nÃºmero si viene como string del backend
+        // Convertir precio a numero si viene como string del backend
         const precio = typeof producto.precio === 'string' ? parseFloat(producto.precio) : producto.precio;
         
         return `
         <div class="producto">
-            <img src="imagenes/${producto.imagen}" alt="${producto.nombre}">
+            <img src="${IMAGES_BASE_URL}/${producto.imagen}" alt="${producto.nombre}">
             <h3>${producto.nombre}</h3>
             <p class="descripcion">${producto.descripcion}</p>
             <p class="precio">$${precio}</p>
-            <button class="btnagregar" onclick="carritoModule.agregarAlCarrito('${producto.nombre}', ${precio})">
+            <button class="btnagregar" data-nombre="${producto.nombre}" data-precio="${precio}">
                 Agregar al carrito
             </button>
         </div>
@@ -672,7 +694,7 @@ function renderPromos() {
         const productosPromoDisponibles = promo.productos.filter(nombrePromo => 
             todosLosProductos.some(prod => prod.nombre === nombrePromo)
         );
-        return productosPromoDisponibles.length > 0; // Solo mostrar si al menos 1 producto estÃ¡ disponible
+        return productosPromoDisponibles.length > 0; // Solo mostrar si al menos 1 producto esta disponible
     });
 
     console.log('ðŸŽ Promos disponibles:', promosDisponibles.length, 'de', productos.promos.length);
@@ -694,7 +716,7 @@ function renderPromos() {
         
         return `
             <div class="producto">
-                <div class="promo-icon">⚡</div>
+                <div class="promo-icon"><i class="bi bi-gift-fill"></i></div>
                 <h3>${promo.titulo}</h3>
                 <p class="descripcion">${promo.descripcion}</p>  
                 <p class="precio">$${promo.precioPromo}</p>
@@ -713,7 +735,7 @@ function renderPromos() {
     }
 }
 
-// Sistema de selecciÃ³n de productos para promos
+// Sistema de seleccion de productos para promos
 let seleccionActual = {
     promo: null,
     productosSeleccionados: [],
@@ -736,13 +758,13 @@ function mostrarModalSeleccion(promo) {
     descripcion.textContent = promo.descripcion;
     totalRequerido.textContent = seleccionActual.cantidadRequerida;
     
-    // Renderizar opciones de productos con imÃ¡genes
+    // Renderizar opciones de productos con imagenes
     contenedor.innerHTML = promo.productos.map(nombreProducto => {
-        // Buscar el producto completo en la categorÃ­a correspondiente
+        // Buscar el producto completo en la categoria correspondiente
         const productoCompleto = productos[promo.categoria].find(p => p.nombre === nombreProducto);
         return `
             <div class="producto-seleccion" data-producto="${nombreProducto}" onclick="toggleSeleccionProducto(this)">
-                ${productoCompleto ? `<img src="imagenes/${productoCompleto.imagen}" alt="${nombreProducto}">` : ''}
+                ${productoCompleto ? `<img src="${IMAGES_BASE_URL}/${productoCompleto.imagen}" alt="${nombreProducto}">` : ''}
                 <h4>${nombreProducto}</h4>
                 ${productoCompleto ? `<p class="precio">$${productoCompleto.precio}</p>` : ''}
             </div>
@@ -758,7 +780,7 @@ function toggleSeleccionProducto(elemento) {
     const index = seleccionActual.productosSeleccionados.indexOf(producto);
     
     if (index === -1) {
-        // Agregar producto si no estÃ¡ seleccionado y no hemos alcanzado el lÃ­mite
+        // Agregar producto si no esta seleccionado y no hemos alcanzado el limite
         if (seleccionActual.productosSeleccionados.length < seleccionActual.cantidadRequerida) {
             seleccionActual.productosSeleccionados.push(producto);
             elemento.classList.add('seleccionado');
@@ -766,7 +788,7 @@ function toggleSeleccionProducto(elemento) {
             mostrarMensaje(`Solo puedes seleccionar ${seleccionActual.cantidadRequerida} productos`, 'error');
         }
     } else {
-        // Remover producto si ya estÃ¡ seleccionado
+        // Remover producto si ya esta seleccionado
         seleccionActual.productosSeleccionados.splice(index, 1);
         elemento.classList.remove('seleccionado');
     }
@@ -785,13 +807,13 @@ function actualizarContadorSeleccion() {
 function agregarPromoAlCarrito(titulo, precio) {
     const promo = productos.promos.find(p => p.titulo === titulo);
     if (promo) {
-        // Promociones Keto se agregan automÃ¡ticamente (un solo producto)
+        // Promociones Keto se agregan automaticamente (un solo producto)
         if (promo.titulo === "Promo Keto" || promo.titulo === "Promo Barritas Keto") {
             const tituloPersonalizado = `${promo.titulo} (${promo.productos.join(', ')})`;
             carritoModule.agregarAlCarrito(tituloPersonalizado, promo.precioPromo, true);
             mostrarMensaje('Promoción agregada al carrito con éxito', 'exito');
         } else {
-            // Otras promociones requieren selecciÃ³n
+            // Otras promociones requieren seleccion
             mostrarModalSeleccion(promo);
         }
     }
@@ -804,7 +826,7 @@ function confirmarSeleccionPromo() {
         document.getElementById('modal-seleccion').classList.remove('activo');
         mostrarMensaje('Promoción agregada al carrito con éxito', 'exito');
         
-        // Limpiar selecciÃ³n actual
+        // Limpiar seleccion actual
         seleccionActual = {
             promo: null,
             productosSeleccionados: [],
@@ -824,16 +846,16 @@ function renderGranolas() {
     const productosAMostrar = mostrandoTodosGranolas ? productos.granolas : productos.granolas.slice(0, 4);
 
     contenedor.innerHTML = productosAMostrar.map(producto => {
-        // Convertir precio a nÃºmero si viene como string del backend
+        // Convertir precio a numero si viene como string del backend
         const precio = typeof producto.precio === 'string' ? parseFloat(producto.precio) : producto.precio;
         
         return `
         <div class="producto">
-            <img src="imagenes/${producto.imagen}" alt="${producto.nombre}">
+            <img src="${IMAGES_BASE_URL}/${producto.imagen}" alt="${producto.nombre}">
             <h3>${producto.nombre}</h3>
             <p class="descripcion">${producto.descripcion}</p>
             <p class="precio">$${precio}</p>
-            <button class="btnagregar" onclick="carritoModule.agregarAlCarrito('${producto.nombre}', ${precio})">
+            <button class="btnagregar" data-nombre="${producto.nombre}" data-precio="${precio}">
                 Agregar al carrito
             </button>
         </div>
@@ -852,7 +874,7 @@ let scrollTimer = null;
 const SCROLL_THRESHOLD = 100;
 const SCROLL_DELAY = 150; // ms entre actualizaciones
 
-// FunciÃ³n throttled para el scroll
+// Funcion throttled para el scroll
 function handleHeaderScroll() {
     if (scrollTimer !== null) {
         return; // Si hay una actualizaciÃ³n pendiente, salimos
@@ -877,16 +899,20 @@ function handleHeaderScroll() {
     }
 }
 
-// Configuración de API - se adapta automáticamente al entorno
+// Configuracion de API - se adapta automaticamente al entorno
 const API_BASE_URL = window.location.hostname === 'localhost' 
     ? 'http://localhost:3001' 
     : 'https://kivra-nutrir.onrender.com';
 
+// Configuración de ruta de imágenes
+const IMAGES_BASE_URL = `${API_BASE_URL}/imagenes`;
+
 console.log('🌍 Hostname detectado:', window.location.hostname);
 console.log('🔗 API_BASE_URL configurada:', API_BASE_URL);
+console.log('🖼️ IMAGES_BASE_URL configurada:', IMAGES_BASE_URL);
 console.log('🌐 URL completa actual:', window.location.href);
 
-// FunciÃ³n para cargar productos desde el backend
+// Funcion para cargar productos desde el backend
 function cargarProductosDesdeBackend() {
     console.log('ðŸ”„ Intentando cargar productos desde el backend...');
     console.log('ðŸŒ URL de API:', `${API_BASE_URL}/api/productos`);
@@ -905,9 +931,9 @@ function cargarProductosDesdeBackend() {
             
             // Filtrar solo productos con stock disponible
             const productosConStock = productosBackend.filter(p => p.stock > 0);
-            console.log('âœ… Productos con stock disponible:', productosConStock.length);
+            console.log('Productos con stock disponible:', productosConStock.length);
             
-            // Reorganizar productos por categorÃ­a (solo los que tienen stock)
+            // Reorganizar productos por categoria (solo los que tienen stock)
             productos.barritas = productosConStock.filter(p => p.categoria === 'barritas' || p.categoria === 'otros' || !p.categoria || p.categoria.trim() === '');
             productos.granolas = productosConStock.filter(p => p.categoria === 'granolas');
             productos.otros = productosConStock.filter(p => p.categoria === 'otros');
@@ -921,7 +947,7 @@ function cargarProductosDesdeBackend() {
             renderPromos();
             renderGranolas();
             renderBarritas();
-            console.log('âœ¨ Productos renderizados desde backend');
+            console.log('Productos renderizados desde backend');
         })
         .catch(error => {
             console.error('ERROR: No se pudo conectar con el backend:', error);
@@ -948,10 +974,10 @@ function cargarProductosDesdeBackend() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Cargar productos desde backend o usar datos estÃ¡ticos como fallback
+    // Cargar productos desde backend o usar datos estaticos como fallback
     cargarProductosDesdeBackend();
 
-    // AÃ±adir evento de scroll
+    // Anadir evento de scroll
     window.addEventListener('scroll', handleHeaderScroll);
 
     // Cargar el carrito al inicio
@@ -1000,7 +1026,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // BotÃ³n seguir comprando
+    // Boton seguir comprando
     document.getElementById('seguir-comprando-modal')?.addEventListener('click', () => {
         cartModalContent.classList.remove('activo');
         document.getElementById('chevron-carrito-modal').style.transform = 'rotate(0deg)';
@@ -1023,14 +1049,25 @@ document.addEventListener('DOMContentLoaded', () => {
     // Inicializar buscador
     document.getElementById("buscador")?.addEventListener('input', productosModule.filtrarProductos);
 
-    // Configurar botones "Ver mÃ¡s"
-    // FunciÃ³n para mostrar el modal
+    // Event delegation para botones de agregar al carrito (para buscador y productos dinamicos)
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('btnagregar')) {
+            const nombre = e.target.dataset.nombre;
+            const precio = parseFloat(e.target.dataset.precio);
+            if (nombre && precio) {
+                carritoModule.agregarAlCarrito(nombre, precio);
+            }
+        }
+    });
+
+    // Configurar botones "Ver mas"
+    // Funcion para mostrar el modal
     function mostrarModal() {
         document.getElementById('modal-productos').classList.add('activo');
         document.body.classList.add('modal-open');
     }
 
-    // FunciÃ³n para ocultar el modal
+    // Funcion para ocultar el modal
     function ocultarModal() {
         document.getElementById('modal-productos').classList.remove('activo');
         document.body.classList.remove('modal-open');
@@ -1065,7 +1102,7 @@ document.addEventListener('DOMContentLoaded', () => {
         mostrarModal();
     });
 
-    // Event listeners para modal de selecciÃ³n
+    // Event listeners para modal de seleccion
     document.getElementById('cerrar-modal-seleccion')?.addEventListener('click', () => {
         document.getElementById('modal-seleccion').classList.remove('activo');
     });
@@ -1088,7 +1125,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // =============================
 // ACTUALIZAR STOCK DESDE FRONTEND
 // =============================
-// Llama a este mÃ©todo para actualizar el stock de un producto en la base de datos MySQL
+// Llama a este metodo para actualizar el stock de un producto en la base de datos MySQL
 // Ejemplo: actualizarStockProducto(5, 10) // Actualiza el producto con id=5 a stock=10
 function actualizarStockProducto(id, nuevoStock) {
     fetch(`${API_BASE_URL}/api/productos/${id}/stock`, {
@@ -1104,7 +1141,7 @@ function actualizarStockProducto(id, nuevoStock) {
             mostrarMensaje('Error al actualizar stock', 'error');
         }
     })
-    .catch(() => mostrarMensaje('Error de conexión con el backend', 'error'));
+    .catch(() => mostrarMensaje('Error de conexion con el backend', 'error'));
 }
 
 
