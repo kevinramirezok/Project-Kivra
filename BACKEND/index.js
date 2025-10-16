@@ -132,9 +132,27 @@ const storage = multer.diskStorage({
         cb(null, imagenesPath);
     },
     filename: function (req, file, cb) {
-        // 🔒 SEGURIDAD: Sanitizar nombre de archivo
-        const safeName = file.originalname.replace(/[^a-zA-Z0-9.-]/g, '_');
-        cb(null, Date.now() + '-' + safeName);
+        // MANTENER el nombre original del archivo SIN MODIFICACIONES
+        // Solo eliminar caracteres peligrosos para path traversal
+        const originalName = file.originalname;
+        
+        // Remover solo caracteres peligrosos: ../, \, path separators
+        const safeName = path.basename(originalName)
+            .replace(/\.\./g, '')  // Eliminar ..
+            .replace(/[\/\\]/g, '_');  // Reemplazar / y \ por _
+        
+        const fs = require('fs');
+        const filePath = path.join(imagenesPath, safeName);
+        
+        if (fs.existsSync(filePath)) {
+            // Si existe, sobrescribirlo (actualizar imagen)
+            console.log('⚠️ Sobrescribiendo imagen existente:', safeName);
+            cb(null, safeName);
+        } else {
+            // Si no existe, usar nombre original limpio
+            console.log('✅ Guardando nueva imagen:', safeName);
+            cb(null, safeName);
+        }
     }
 });
 
@@ -329,9 +347,9 @@ app.put('/api/productos/:id/stock', async (req, res) => {
         if (accionFrontend === 'venta') {
             accion = 'salida';   // Venta = salida de stock
         } else if (stockNumerico < stockAntes) {
-            accion = 'ajuste_salida';   // Admin redujo stock
+            accion = 'actualizacion';   // Admin redujo stock
         } else if (stockNumerico > stockAntes) {
-            accion = 'ajuste_entrada';  // Admin aumentó stock
+            accion = 'actualizacion';  // Admin aumentó stock
         }
         
         console.log('📝 Registrando movimiento PRIMERO - Cantidad:', cantidad, 'Acción:', accion);
@@ -461,7 +479,10 @@ app.delete('/api/productos/:id', async (req, res) => {
         }
         
         // 🔒 VERIFICAR: Producto existe antes de eliminar
-        const productoResult = await executeQuery('SELECT * FROM productos WHERE id = ?', [id]);
+        const verificarQuery = usePostgreSQL 
+            ? 'SELECT * FROM productos WHERE id = $1'
+            : 'SELECT * FROM productos WHERE id = ?';
+        const productoResult = await executeQuery(verificarQuery, [id]);
         
         if (!productoResult.rows || productoResult.rows.length === 0) {
             console.log('❌ Producto no encontrado para eliminar:', id);
@@ -476,35 +497,64 @@ app.delete('/api/productos/:id', async (req, res) => {
             console.log('⚠️ ADVERTENCIA: Eliminando producto con stock:', producto.stock);
         }
         
-        // 🔒 SOFT DELETE vs HARD DELETE
-        // Por seguridad, usamos soft delete (marcar como eliminado)
         const now = new Date().toISOString();
         
-        // PASO 1: Registrar movimiento ANTES de eliminar
-        await executeQuery(
-            'INSERT INTO movimientos (producto_id, accion, cantidad, stock_antes, stock_despues, usuario) VALUES (?, ?, ?, ?, ?, ?)',
-            [id, 'eliminacion', producto.stock, producto.stock, 0, 'admin']
-        );
-        
-        console.log('✅ Movimiento de eliminación registrado');
-        
-        // PASO 2: Soft Delete - agregar fecha de eliminación
-        const updateQuery = usePostgreSQL 
-            ? 'UPDATE productos SET deleted_at = $1 WHERE id = $2'
-            : 'UPDATE productos SET deleted_at = ? WHERE id = ?';
-            
+        // PASO 1: Registrar movimiento de eliminación como "salida" con usuario especial
+        const movimientoQuery = usePostgreSQL
+            ? 'INSERT INTO movimientos (producto_id, accion, cantidad, stock_antes, stock_despues, usuario) VALUES ($1, $2, $3, $4, $5, $6)'
+            : 'INSERT INTO movimientos (producto_id, accion, cantidad, stock_antes, stock_despues, usuario) VALUES (?, ?, ?, ?, ?, ?)';
         try {
-            await executeQuery(updateQuery, [now, id]);
-            console.log('✅ Producto marcado como eliminado (soft delete)');
-        } catch (softDeleteError) {
-            // Si no existe campo deleted_at, hacer hard delete
-            console.log('⚠️ Campo deleted_at no existe, usando hard delete');
-            const deleteResult = await executeQuery('DELETE FROM productos WHERE id = ?', [id]);
-            
-            if (deleteResult.rowCount === 0) {
-                return res.status(500).json({ success: false, error: 'Error al eliminar producto' });
-            }
+            await executeQuery(
+                movimientoQuery,
+                [id, 'eliminado', producto.stock, producto.stock, 0, 'admin']
+            );
+            console.log('✅ Movimiento de eliminación registrado');
+        } catch (movErr) {
+            console.log('⚠️ No se pudo registrar movimiento:', movErr.message);
         }
+
+        // PASO EXTRA: Guardar el nombre del producto en texto plano en movimientos antes de romper la relación
+        const updateNombreMovQuery = usePostgreSQL
+            ? 'UPDATE movimientos SET producto_nombre = $1 WHERE producto_id = $2 AND accion = $3'
+            : 'UPDATE movimientos SET producto_nombre = ? WHERE producto_id = ? AND accion = ?';
+        try {
+            await executeQuery(updateNombreMovQuery, [producto.nombre, id, 'eliminado']);
+            console.log('✅ Nombre del producto guardado en movimientos');
+        } catch (err) {
+            console.log('⚠️ No se pudo guardar el nombre en movimientos:', err.message);
+        }
+        
+        // PASO 2: Cambiar producto_id a NULL en movimientos para romper foreign key
+        const nullifyQuery = usePostgreSQL
+            ? 'UPDATE movimientos SET producto_id = NULL WHERE producto_id = $1'
+            : 'UPDATE movimientos SET producto_id = NULL WHERE producto_id = ?';
+        
+        try {
+            await executeQuery(nullifyQuery, [id]);
+            console.log('✅ Referencias de producto eliminadas de movimientos');
+        } catch (nullErr) {
+            console.log('⚠️ Error al nullificar referencias:', nullErr.message);
+            // Si falla, eliminar movimientos
+            const deleteMovQuery = usePostgreSQL
+                ? 'DELETE FROM movimientos WHERE producto_id = $1'
+                : 'DELETE FROM movimientos WHERE producto_id = ?';
+            await executeQuery(deleteMovQuery, [id]);
+            console.log('✅ Movimientos eliminados (fallback)');
+        }
+        
+        // PASO 3: HARD DELETE del producto
+        const deleteQuery = usePostgreSQL
+            ? 'DELETE FROM productos WHERE id = $1'
+            : 'DELETE FROM productos WHERE id = ?';
+        
+        const deleteResult = await executeQuery(deleteQuery, [id]);
+        
+        if (deleteResult.rowCount === 0 && !deleteResult.affectedRows) {
+            console.log('❌ Error: No se pudo eliminar el producto');
+            return res.status(500).json({ success: false, error: 'Error al eliminar producto' });
+        }
+        
+        console.log('✅ Producto eliminado permanentemente de la base de datos');
         
         // 🔒 AUDITORÍA: Log detallado
         console.log(`🗑️ PRODUCTO ELIMINADO - ID: ${id}, Nombre: ${producto.nombre}, Usuario: admin, Timestamp: ${now}`);
@@ -561,14 +611,20 @@ app.put('/api/productos/:id', upload.single('imagen'), async (req, res) => {
 app.get('/api/movimientos', async (req, res) => {
     try {
         const sql = `
-            SELECT m.*, p.nombre AS producto_nombre
+            SELECT m.*, 
+                   COALESCE(m.producto_nombre, p.nombre, 'ELIMINADO') AS producto_nombre
             FROM movimientos m
             LEFT JOIN productos p ON m.producto_id = p.id
             ORDER BY m.fecha DESC
             LIMIT 200
         `;
         const result = await executeQuery(sql);
-        res.json(result.rows);
+        // Formatear la fecha a solo día/mes/año
+        const rows = result.rows.map(row => ({
+            ...row,
+            fecha: row.fecha ? new Date(row.fecha).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : null
+        }));
+        res.json(rows);
     } catch (err) {
         console.error('Error al obtener movimientos:', err);
         res.status(500).json({ error: err.message });
