@@ -622,10 +622,10 @@ app.get('/api/movimientos', async (req, res) => {
             LIMIT 200
         `;
         const result = await executeQuery(sql);
-        // Formatear la fecha a solo día/mes/año
+        // Devolver la fecha en formato ISO para que el frontend la parsee correctamente
         const rows = result.rows.map(row => ({
             ...row,
-            fecha: row.fecha ? new Date(row.fecha).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : null
+            fecha: row.fecha ? new Date(row.fecha).toISOString() : null
         }));
         res.json(rows);
     } catch (err) {
