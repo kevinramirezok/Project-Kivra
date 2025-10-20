@@ -967,6 +967,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Anadir evento de scroll
     window.addEventListener('scroll', handleHeaderScroll);
+    
+    // Ocultar/mostrar header en móviles al hacer scroll
+    if (window.innerWidth <= 600) {
+        let lastScrollY = window.scrollY;
+        let ticking = false;
+        
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    const header = document.querySelector('header');
+                    if (!header) return;
+                    
+                    const currentScrollY = window.scrollY;
+                    
+                    if (currentScrollY > lastScrollY && currentScrollY > 80) {
+                        // Scroll hacia abajo - ocultar header
+                        header.classList.add('header-hidden');
+                    } else {
+                        // Scroll hacia arriba - mostrar header
+                        header.classList.remove('header-hidden');
+                    }
+                    
+                    lastScrollY = currentScrollY;
+                    ticking = false;
+                });
+                
+                ticking = true;
+            }
+        });
+    }
 
     // Cargar el carrito al inicio
     cargarCarrito();
