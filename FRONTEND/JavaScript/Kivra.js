@@ -12,7 +12,7 @@ const productos = {
             descripcion: "Llevando 3 unidades SURTIDAS",
             cantidadRequerida: 3,
             categoria: "granolas",
-            productos: ["GRANOLA PREMIUM", "GRANOLA MADRE TIERRA", "GRANOLA FUERZA NATURAL"],
+            productos: ["Granola Premium", "Granola Madre Tierra", "Granola Fuerza Natural"],
             precioPromo: 27000,
             precioOriginal: 9900
         },
@@ -21,7 +21,7 @@ const productos = {
             descripcion: "Llevando 3 unidades SURTIDAS",
             cantidadRequerida: 3,
             categoria: "granolas",
-            productos: ["GRANOLA CROCANTE", "GRANOLA ESPECIAL CON FRUTAS", "GRANOLA NATURAL", "GRANOLA ENERGÉTICA", "GRANOLA CROCANTE CON MANZANAS", "GRANOLA TROPICAL"],
+            productos: ["Granola CROCANTE", "Granola Especial Con Frutas", "Granola Natural", "Granola Energética", "Granola Crocante con Manzanas", "Granola Tropical"],
             precioPromo: 25000,
             precioOriginal: 9500
         },
@@ -30,7 +30,7 @@ const productos = {
             descripcion: "Llevando 4 unidades SURTIDAS",
             cantidadRequerida: 4,
             categoria: "barritas",
-            productos: ["BARRITA PROTEICA", "BARRITA DULCE DE LECHE", "BARRITA TRIGO SARRACENO", "BARRITA ENERGÉTICA"],
+            productos: ["Barrita Proteica", "Barrita Dulce de Leche", "Barrita Trigo Sarraceno", "Barrita Energética"],
             precioPromo: 4000,
             precioOriginal: 1150
         },
@@ -39,7 +39,7 @@ const productos = {
             descripcion: "Llevando 4 unidades SURTIDAS",
             cantidadRequerida: 4,
             categoria: "barritas",
-            productos: ["BARRITA NATURAL", "BARRITA GRANOLA", "BARRITA DE SESAMO", "BARRITA DE MANI"],
+            productos: ["Barrita Natural", "Barrita Granola", "Barrita de Sésamo", "Barrita de Mani"],
             precioPromo: 3600,
             precioOriginal: 1000
         },
@@ -48,7 +48,7 @@ const productos = {
             descripcion: "Llevando 5 unidades SURTIDAS",
             cantidadRequerida: 5,
             categoria: "turrones",
-            productos: ["TURRON ENERGETICO DE CHIA", "TURRON ENERGETICO", "TURRON PURO CALCIO", "TURRON PURA FIBRA", "TURRON CROCANTE DE MANI"],
+            productos: ["Turrón Energético", "Turron Pura Fibra", "Turrón Puro Calcio", "Turrón Energético de Chía", "Turron Crocante de Mani"],
             precioPromo: 7000,
             precioOriginal: 1600
         },
@@ -57,7 +57,7 @@ const productos = {
             descripcion: "Llevando 2 unidades de Granola Keto",
             cantidadRequerida: 2,
             categoria: "granolas",
-            productos: ["GRANOLA KETO"],
+            productos: ["Granola Keto"],
             precioPromo: 29900,
             precioOriginal: 16800
         },
@@ -66,7 +66,7 @@ const productos = {
             descripcion: "Llevando 4 unidades de Barrita Keto",
             cantidadRequerida: 4,
             categoria: "barritas",
-            productos: ["BARRITA KETO"],
+            productos: ["Barrita Keto"],
             precioPromo: 8500,
             precioOriginal: 2500
         }
@@ -116,9 +116,9 @@ function cargarCarrito() {
 
 // Funciones del carrito
 const carritoModule = {
-    async agregarAlCarrito(nombre, precio, silencioso = false) {
+    agregarAlCarrito(nombre, precio, silencioso = false) {
         try {
-            // ðŸš¨ VALIDACIÃ“N CRÃTICA: Tipo y formato de datos
+            //  VALIDACION CRITICA: Tipo y formato de datos
             if (typeof nombre !== 'string' || nombre.trim().length === 0) {
                 throw new Error('Nombre del producto invalido');
             }
@@ -135,41 +135,8 @@ const carritoModule = {
                 throw new Error('Precio demasiado alto');
             }
 
-            // ðŸ”’ VALIDACIÃ“N DE STOCK: Verificar disponibilidad en tiempo real
-            console.log('ðŸ” Verificando stock para:', nombre);
-            
-            try {
-                const response = await fetch('/api/productos');
-                const productos = await response.json();
-                
-                const producto = productos.find(p => p.nombre === nombre.trim());
-                
-                if (!producto) {
-                    throw new Error('Producto no encontrado o discontinuado');
-                }
-                
-                if (producto.stock <= 0) {
-                    throw new Error('Producto sin stock disponible');
-                }
-                
-                // Verificar si ya existe en carrito
-                const itemExistente = carrito.find(item => item.nombre === nombre.trim());
-                const cantidadEnCarrito = itemExistente ? itemExistente.cantidad : 0;
-                
-                if (cantidadEnCarrito >= producto.stock) {
-                    throw new Error(`Solo quedan ${producto.stock} unidades disponibles`);
-                }
-                
-                if (cantidadEnCarrito >= 10) {
-                    throw new Error('Maximo 10 unidades por producto');
-                }
-                
-                console.log('Stock validado:', producto.stock, 'En carrito:', cantidadEnCarrito);
-                
-            } catch (fetchError) {
-                console.warn('âš ï¸ No se pudo validar stock, continuando...', fetchError.message);
-                // Continuar sin validaciÃ³n de stock si el servidor no responde
-            }
+            // ⚡ PERFORMANCE: Validación de stock solo al finalizar compra (no en cada click)
+            // Esto mejora significativamente la velocidad al agregar productos
 
             // Proceder con la adicion al carrito
             const nombreLimpio = nombre.trim();
@@ -215,6 +182,18 @@ const carritoModule = {
             guardarCarrito();
             this.actualizarCarrito();
             this.actualizarMiniCarrito();
+        }
+    },
+
+    agregarUnidadAlCarrito(nombre) {
+        const itemExistente = carrito.find(item => item.nombre === nombre);
+        if (itemExistente) {
+            itemExistente.cantidad++;
+            total += itemExistente.precio;
+            guardarCarrito();
+            this.actualizarCarrito();
+            this.actualizarMiniCarrito();
+            mostrarMensaje('Producto agregado', 'exito');
         }
     },
 
@@ -326,7 +305,8 @@ const carritoModule = {
                     <span class="mini-cantidad">x${info.cantidad}</span>
                     <span class="mini-precio">$${info.subtotal}</span>
                     <div class="mini-acciones">
-                        <button class="mini-eliminar-uno" data-producto="${escapeHtml(nombre)}" data-accion="eliminar-uno">-</button>
+                        <button class="mini-agregar-uno" data-producto="${escapeHtml(nombre)}" data-accion="agregar-uno" title="Agregar una unidad">+</button>
+                        <button class="mini-eliminar-uno" data-producto="${escapeHtml(nombre)}" data-accion="eliminar-uno" title="Quitar una unidad">-</button>
                         <button class="mini-eliminar-todo" data-producto="${escapeHtml(nombre)}" data-accion="eliminar-todo">×</button>
                     </div>
                 </div>
@@ -356,7 +336,15 @@ const carritoModule = {
             btn.parentNode.replaceChild(newBtn, btn);
         });
 
-        // Agregar listeners seguros
+        // Agregar listeners seguros para AGREGAR unidad (+)
+        document.querySelectorAll('[data-accion="agregar-uno"]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const producto = e.target.dataset.producto;
+                if (producto) this.agregarUnidadAlCarrito(producto);
+            });
+        });
+
+        // Agregar listeners seguros para ELIMINAR unidad (-)
         document.querySelectorAll('[data-accion="eliminar-uno"]').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const producto = e.target.dataset.producto;
@@ -901,7 +889,7 @@ function handleHeaderScroll() {
 
 // Configuracion de API - se adapta automaticamente al entorno
 const API_BASE_URL = window.location.hostname === 'localhost' 
-    ? 'http://localhost:3001' 
+    ? 'http://localhost:10000' 
     : 'https://kivra-nutrir.onrender.com';
 
 // Configuración de ruta de imágenes

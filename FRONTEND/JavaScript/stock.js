@@ -10,7 +10,7 @@ if (sessionStorage.getItem('kivra_auth') !== PASSWORD) {
 }
 
 const API_BASE_URL = window.location.hostname === 'localhost' 
-    ? 'http://localhost:3001' 
+    ? 'http://localhost:10000' 
     : 'https://kivra-nutrir.onrender.com';
 
 // Configuración de ruta de imágenes
