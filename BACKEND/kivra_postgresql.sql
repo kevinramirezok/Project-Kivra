@@ -16,8 +16,9 @@ CREATE TABLE IF NOT EXISTS productos (
 -- Crear tabla movimientos
 CREATE TABLE IF NOT EXISTS movimientos (
     id SERIAL PRIMARY KEY,
-    producto_id INTEGER REFERENCES productos(id),
-    accion VARCHAR(50) NOT NULL CHECK (accion IN ('entrada', 'salida')),
+    producto_id INTEGER REFERENCES productos(id) ON DELETE SET NULL,
+    producto_nombre VARCHAR(255),
+    accion VARCHAR(50) NOT NULL CHECK (accion IN ('entrada', 'salida', 'actualizacion', 'ajuste', 'venta', 'edicion')),
     cantidad INTEGER NOT NULL,
     stock_antes INTEGER NOT NULL,
     stock_despues INTEGER NOT NULL,

@@ -328,8 +328,8 @@ app.put('/api/productos/:id/stock', async (req, res) => {
             return res.status(400).json({ error: 'El stock no puede ser mayor a 9999' });
         }
         
-        // Obtener stock anterior
-        const stockResult = await executeQuery('SELECT stock FROM productos WHERE id = ?', [id]);
+        // Obtener stock anterior Y NOMBRE del producto
+        const stockResult = await executeQuery('SELECT stock, nombre FROM productos WHERE id = ?', [id]);
         console.log('📊 Resultado consulta stock:', stockResult);
         
         if (!stockResult.rows || stockResult.rows.length === 0) {
@@ -338,25 +338,27 @@ app.put('/api/productos/:id/stock', async (req, res) => {
         }
         
         const stockAntes = stockResult.rows[0].stock;
+        const productoNombre = stockResult.rows[0].nombre;
         console.log('📈 Stock anterior:', stockAntes);
+        console.log('📦 Producto:', productoNombre);
         
         // 🔒 TRANSACCIÓN: Primero registrar movimiento, después actualizar stock
         const cantidad = Math.abs(stockNumerico - stockAntes);
-        let accion = 'ajuste';  // Valor por defecto mejorado
+        let accion = 'edicion';  // Valor por defecto para ediciones manuales
         
         if (accionFrontend === 'venta') {
-            accion = 'salida';   // Venta = salida de stock
+            accion = 'venta';   // Venta = salida de stock
         } else if (stockNumerico < stockAntes) {
-            accion = 'actualizacion';   // Admin redujo stock
+            accion = 'edicion';   // Admin redujo stock manualmente
         } else if (stockNumerico > stockAntes) {
-            accion = 'actualizacion';  // Admin aumentó stock
+            accion = 'entrada';  // Admin aumentó stock (reposición)
         }
         
         console.log('📝 Registrando movimiento PRIMERO - Cantidad:', cantidad, 'Acción:', accion);
         
-        // PASO 1: Registrar movimiento (si esto falla, no se actualiza stock)
-        await executeQuery('INSERT INTO movimientos (producto_id, accion, cantidad, stock_antes, stock_despues, usuario) VALUES (?, ?, ?, ?, ?, ?)',
-            [parseInt(id), accion, cantidad, stockAntes, stockNumerico, 'admin']);
+        // PASO 1: Registrar movimiento con nombre del producto (si esto falla, no se actualiza stock)
+        await executeQuery('INSERT INTO movimientos (producto_id, producto_nombre, accion, cantidad, stock_antes, stock_despues, usuario) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [parseInt(id), productoNombre, accion, cantidad, stockAntes, stockNumerico, 'admin']);
         
         console.log('✅ Movimiento registrado correctamente');
         
@@ -392,10 +394,10 @@ app.post('/api/productos/:id/venta', async (req, res) => {
         
         console.log(`📦 Procesando venta: ${cantidadVenta} unidades del producto ${id}`);
         
-        // 🔒 TRANSACCIÓN ATÓMICA: Obtener stock actual con FOR UPDATE (bloquea fila)
+        // 🔒 TRANSACCIÓN ATÓMICA: Obtener stock actual Y NOMBRE con FOR UPDATE (bloquea fila)
         const stockQuery = usePostgreSQL 
-            ? 'SELECT stock FROM productos WHERE id = $1 FOR UPDATE'
-            : 'SELECT stock FROM productos WHERE id = ? FOR UPDATE';
+            ? 'SELECT stock, nombre FROM productos WHERE id = $1 FOR UPDATE'
+            : 'SELECT stock, nombre FROM productos WHERE id = ? FOR UPDATE';
             
         const stockResult = await executeQuery(stockQuery, [id]);
         
@@ -404,6 +406,7 @@ app.post('/api/productos/:id/venta', async (req, res) => {
         }
         
         const stockActual = stockResult.rows[0].stock;
+        const productoNombre = stockResult.rows[0].nombre;
         console.log(`📊 Stock actual: ${stockActual}, Venta solicitada: ${cantidadVenta}`);
         
         // 🚨 VALIDACIÓN CRÍTICA: Verificar stock suficiente
@@ -416,10 +419,10 @@ app.post('/api/productos/:id/venta', async (req, res) => {
         
         const nuevoStock = stockActual - cantidadVenta;
         
-        // PASO 1: Registrar movimiento de venta
+        // PASO 1: Registrar movimiento de venta CON NOMBRE
         await executeQuery(
-            'INSERT INTO movimientos (producto_id, accion, cantidad, stock_antes, stock_despues, usuario) VALUES (?, ?, ?, ?, ?, ?)',
-            [id, 'salida', cantidadVenta, stockActual, nuevoStock, 'admin']
+            'INSERT INTO movimientos (producto_id, producto_nombre, accion, cantidad, stock_antes, stock_despues, usuario) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [id, productoNombre, 'venta', cantidadVenta, stockActual, nuevoStock, 'admin']
         );
         
         console.log('✅ Movimiento de venta registrado');
@@ -454,9 +457,9 @@ app.post('/api/productos', upload.single('imagen'), async (req, res) => {
         
         const productoId = result.insertId;
         
-        // Registrar movimiento de alta
-        await executeQuery('INSERT INTO movimientos (producto_id, accion, cantidad, stock_antes, stock_despues, usuario) VALUES (?, ?, ?, ?, ?, ?)',
-            [productoId, 'entrada', stock, 0, stock, 'admin']);
+        // Registrar movimiento de alta CON NOMBRE
+        await executeQuery('INSERT INTO movimientos (producto_id, producto_nombre, accion, cantidad, stock_antes, stock_despues, usuario) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [productoId, nombre, 'entrada', stock, 0, stock, 'admin']);
         
         res.json({ success: true });
         
