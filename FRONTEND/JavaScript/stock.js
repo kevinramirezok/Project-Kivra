@@ -418,8 +418,9 @@ function exportarHistorialCSV() {
     const headers = ['Fecha', 'Producto', 'Acción', 'Cantidad', 'Stock Antes', 'Stock Después', 'Usuario'];
     let csv = headers.join(',') + '\n';
     movimientosGlobal.forEach(mov => {
+        let fechaFormateada = mov.fecha ? new Date(mov.fecha.replace(' ', 'T')).toLocaleString() : '';
         csv += [
-            new Date(mov.fecha).toLocaleString(),
+            fechaFormateada,
             mov.producto_nombre || mov.producto_id,
             mov.accion,
             mov.cantidad,
@@ -466,8 +467,9 @@ function renderizarTablaHistorial(data) {
     data.forEach(mov => {
         let rowStyle = '';
         if (mov.accion === 'Venta' || mov.accion === 'Eliminación') rowStyle = 'background:#fff3cd;';
+        let fechaFormateada = mov.fecha ? new Date(mov.fecha.replace(' ', 'T')).toLocaleString() : '';
         html += `<tr style="${rowStyle}">
-            <td style="padding:6px;border-bottom:1px solid #eee;">${new Date(mov.fecha).toLocaleString()}</td>
+            <td style="padding:6px;border-bottom:1px solid #eee;">${fechaFormateada}</td>
             <td style="padding:6px;border-bottom:1px solid #eee;">${mov.producto_nombre || mov.producto_id}</td>
             <td style="padding:6px;border-bottom:1px solid #eee;">${mov.accion}</td>
             <td style="padding:6px;border-bottom:1px solid #eee;">${mov.cantidad}</td>
