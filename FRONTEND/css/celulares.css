@@ -227,12 +227,12 @@
 @media (max-width: 600px) {
     body {
         padding-bottom: 70px;
-        padding-top: 120px; /* Espacio para el header fijo */
+        padding-top: 160px; /* Espacio suficiente para header sticky + nav */
     }
 
     /* Header compacto y fijo */
     header {
-        padding: 8px 12px;
+        padding: 2px 6px;
         position: fixed;
         top: 0;
         left: 0;
@@ -240,7 +240,7 @@
         z-index: 999;
         transition: transform 0.3s ease-in-out;
         flex-direction: column;
-        gap: 6px;
+        gap: 2px;
     }
     
     header.header-hidden {
@@ -265,19 +265,19 @@
     }
 
     header h1 {
-        font-size: 1.8rem;
-        margin: 0;
-        padding: 0;
-    }
-
-    header .slogan {
         font-size: 1rem;
         margin: 0;
         padding: 0;
     }
 
+    header .slogan {
+        font-size: 0.6rem;
+        margin: 0;
+        padding: 0;
+    }
+
     header > div {
-        gap: 8px;
+        gap: 4px;
         flex-wrap: wrap;
     }
     
@@ -447,7 +447,7 @@
 /* Móviles pequeños */
 @media (max-width: 480px) {
     body {
-        padding-top: 100px; /* Ajustar para header más pequeño */
+        padding-top: 140px; /* Ajustar para header + nav */
     }
     
     /* Header muy compacto */
@@ -710,7 +710,7 @@
 /* Móviles muy pequeños (iPhone SE, etc.) */
 @media (max-width: 375px) {
     body {
-        padding-top: 90px; /* Ajustar para pantallas muy pequeñas */
+        padding-top: 130px; /* Ajustar para header + nav en pantallas pequeñas */
     }
     
     header {
