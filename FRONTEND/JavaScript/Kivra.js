@@ -81,7 +81,7 @@ let mostrandoPromos = false;
 const productosPorPagina = 8;
 
 /*=================================
-  MÃ“DULOS DE CARRITO
+    MÓDULOS DE CARRITO
 ==================================*/
 // Estado global
 let carrito = [];
@@ -118,13 +118,13 @@ function cargarCarrito() {
 const carritoModule = {
     agregarAlCarrito(nombre, precio, silencioso = false) {
         try {
-            //  VALIDACION CRITICA: Tipo y formato de datos
+            // 🔒 VALIDACIÓN CRÍTICA: Tipo y formato de datos
             if (typeof nombre !== 'string' || nombre.trim().length === 0) {
-                throw new Error('Nombre del producto invalido');
+                throw new Error('Nombre del producto inválido');
             }
             
             if (typeof precio !== 'number' || isNaN(precio) || precio <= 0) {
-                throw new Error('Precio del producto invalido');
+                throw new Error('Precio del producto inválido');
             }
             
             if (nombre.trim().length > 255) {
@@ -153,7 +153,7 @@ const carritoModule = {
             guardarCarrito();
             if (!silencioso) { mostrarMensaje('Producto agregado al carrito', 'exito'); }
         } catch (error) {
-            console.error('âŒ Error agregando al carrito:', error);
+            console.error('❌ Error agregando al carrito:', error);
             mostrarMensaje(error.message, 'error');
             return false;
         }
@@ -291,7 +291,7 @@ const carritoModule = {
     },
 
     renderizarMiniCarrito(productos) {
-        // ðŸ”’ SEGURIDAD: FunciÃ³n para escapar HTML y prevenir XSS
+        //  SEGURIDAD: Funcion para escapar HTML y prevenir XSS
         const escapeHtml = (text) => {
             const div = document.createElement('div');
             div.textContent = text;
@@ -322,13 +322,13 @@ const carritoModule = {
             `;
         }
 
-        // ðŸ”’ SEGURIDAD: Configurar event listeners seguros despuÃ©s del render
+        // SEGURIDAD: Configurar event listeners seguros despues del render
         setTimeout(() => this.configurarEventListenersSegurosMini(), 0);
 
         return html;
     },
 
-    // ðŸ”’ Event listeners seguros para mini carrito
+    // Event listeners seguros para mini carrito
     configurarEventListenersSegurosMini() {
         // Remover listeners anteriores para evitar duplicados
         document.querySelectorAll('[data-accion]').forEach(btn => {
@@ -370,47 +370,55 @@ const carritoModule = {
             return;
         }
 
-        // ðŸ”’ VALIDACIÃ“N CRÃTICA: Verificar stock disponible antes de finalizar
-        console.log('ðŸ” Validando stock disponible...');
-        
+        // 🔒 VALIDACIÓN CRÍTICA: Verificar stock disponible antes de finalizar
+        console.log('🔍 Validando stock disponible...');
+
         try {
             const response = await fetch('/api/productos');
             const productosActuales = await response.json();
-            
-            // Verificar cada producto del carrito
+
+            // Verificar cada producto del carrito, ignorando promociones
             const productosNoDisponibles = [];
-            
+
             for (const itemCarrito of carrito) {
+                // Ignorar promos: si el nombre empieza con 'Promo', no validar stock
+                if (typeof itemCarrito.nombre === 'string' && itemCarrito.nombre.trim().toLowerCase().startsWith('promo')) {
+                    continue;
+                }
                 const productoActual = productosActuales.find(p => p.nombre === itemCarrito.nombre);
-                
+
                 if (!productoActual) {
-                    productosNoDisponibles.push(`${itemCarrito.nombre} (ya no esta disponible)`);
+                    productosNoDisponibles.push(`${itemCarrito.nombre} (ya no está disponible)`);
                 } else if (productoActual.stock === 0) {
                     productosNoDisponibles.push(`${itemCarrito.nombre} (sin stock)`);
                 } else if (productoActual.precio !== itemCarrito.precio) {
                     // Opcional: notificar cambio de precio
-                    console.log(`âš ï¸ Precio cambiÃ³ para ${itemCarrito.nombre}: $${itemCarrito.precio} â†’ $${productoActual.precio}`);
+                    console.log(`⚠️ Precio cambió para ${itemCarrito.nombre}: $${itemCarrito.precio} → $${productoActual.precio}`);
                 }
             }
-            
+
             // Si hay productos no disponibles, mostrar error
             if (productosNoDisponibles.length > 0) {
-                alert(`âŒ Los siguientes productos ya no estÃ¡n disponibles:\n\n${productosNoDisponibles.join('\n')}\n\nPor favor, actualiza tu carrito.`);
-                
+                alert(`❌ Los siguientes productos ya no están disponibles:\n\n${productosNoDisponibles.join('\n')}\n\nPor favor, actualiza tu carrito.`);
+
                 // Opcional: remover productos no disponibles del carrito
                 carrito = carrito.filter(item => {
+                    // Ignorar promos al filtrar
+                    if (typeof item.nombre === 'string' && item.nombre.trim().toLowerCase().startsWith('promo')) {
+                        return true;
+                    }
                     const disponible = productosActuales.find(p => p.nombre === item.nombre && p.stock > 0);
                     return disponible;
                 });
-                
+
                 total = carrito.reduce((sum, item) => sum + item.precio, 0);
                 this.actualizarCarrito();
                 guardarCarrito();
                 return;
             }
-            
+
             console.log('Stock validado correctamente');
-            
+
             // Proceder con la compra
             let mensaje = "¡Hola! Quiero pedir:\n";
             carrito.forEach(item => {
@@ -424,16 +432,16 @@ const carritoModule = {
             total = 0;
             this.actualizarCarrito();
             guardarCarrito();
-            
+
         } catch (error) {
-            console.error('âŒ Error validando stock:', error);
+            console.error('❌ Error validando stock:', error);
             alert('Error al validar stock. Por favor, intenta nuevamente.');
         }
     }
 };
 
 /*=================================
-  MÃ“DULO DE PRODUCTOS
+  MODULO DE PRODUCTOS
 ==================================*/
 
 const productosModule = {
@@ -636,7 +644,7 @@ const productosModule = {
 };
 
 /*=================================
-  INICIALIZACIÃ“N Y EVENTOS
+  INICIALIZACION Y EVENTOS
 ==================================*/
 
 // Funciones para renderizar productos
@@ -865,7 +873,7 @@ const SCROLL_DELAY = 150; // ms entre actualizaciones
 // Funcion throttled para el scroll
 function handleHeaderScroll() {
     if (scrollTimer !== null) {
-        return; // Si hay una actualizaciÃ³n pendiente, salimos
+        return; // Si hay una actualizacion pendiente, salimos
     }
 
     const currentScroll = window.scrollY;
@@ -943,20 +951,20 @@ function cargarProductosDesdeBackend() {
             const barritasContainer = document.getElementById('barritasContainer');
             const granolaContainer = document.getElementById('granolaContainer');
             if (barritasContainer) {
-                barritasContainer.innerHTML = `
-                    <div style="text-align: center; padding: 20px; color: #e74c3c;">
-                        <h3>âŒ Error de conexiÃ³n</h3>
-                        <p>No se pudieron cargar los productos. Intenta recargar la pÃ¡gina.</p>
-                    </div>
-                `;
+                    barritasContainer.innerHTML = `
+                        <div style="text-align: center; padding: 20px; color: #e74c3c;">
+                            <h3>❌ Error de conexión</h3>
+                            <p>No se pudieron cargar los productos. Intenta recargar la página.</p>
+                        </div>
+                    `;
             }
             if (granolaContainer) {
-                granolaContainer.innerHTML = `
-                    <div style="text-align: center; padding: 20px; color: #e74c3c;">
-                        <h3>âŒ Error de conexiÃ³n</h3>
-                        <p>No se pudieron cargar los productos. Intenta recargar la pÃ¡gina.</p>
-                    </div>
-                `;
+                    granolaContainer.innerHTML = `
+                        <div style="text-align: center; padding: 20px; color: #e74c3c;">
+                            <h3>❌ Error de conexión</h3>
+                            <p>No se pudieron cargar los productos. Intenta recargar la página.</p>
+                        </div>
+                    `;
             }
         });
 }
